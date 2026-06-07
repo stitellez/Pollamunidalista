@@ -1,9 +1,27 @@
 {
   "scoring": {
-    "exactScore": 3,
-    "correctOutcome": 1,
-    "stacking": "exclusive",
+    "exactScore": 5,
+    "goalDifferenceScore": 3,
+    "correctOutcomeScore": 1,
+    "phaseMultipliers": {
+      "group": 1,
+      "round_of_32": 2,
+      "round_of_16": 2,
+      "quarterfinal": 2,
+      "semifinal": 3,
+      "third_place": 2,
+      "final": 3
+    },
     "bonusRules": []
+  },
+  "phaseUnlocks": {
+    "group": true,
+    "round_of_32": false,
+    "round_of_16": false,
+    "quarterfinal": false,
+    "semifinal": false,
+    "third_place": false,
+    "final": false
   },
   "special": {
     "championPoints": 10,
@@ -15,5 +33,5 @@
       "topScorer": null
     }
   },
-  "scoringNote": "stacking: 'exclusive' = bestes Ergebnis zaehlt | 'additive' = Punkte werden addiert"
+  "scoringNote": "Punkte sind additiv: Treffer-Ergebnis (5) + Tor-Differenz (3) + richtiger Sieger/Unentschieden (1) — alle erfüllten Bedingungen zaehlen zusammen, danach mit phaseMultipliers fuer die jeweilige Phase multipliziert. phaseUnlocks: nur freigeschaltete Phasen sind tippbar (zusaetzlich zur zeitlichen Sperre durch Anpfiff)."
 }

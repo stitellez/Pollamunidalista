@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import type { Match, Config } from '../types';
+import type { Match, Config, Phase } from '../types';
 import api from '../api/client';
 
-type Tab = 'results' | 'knockout' | 'scoring' | 'special' | 'predictions' | 'users';
+type Tab = 'results' | 'knockout' | 'phases' | 'scoring' | 'special' | 'predictions' | 'users';
 
-function ResultsTab({ matches }: { matches: Match[] }) {
+function ResultsTab({ matches, onUpdate }: { matches: Match[]; onUpdate: () => void }) {
   const [saving, setSaving] = useState<string | null>(null);
   const [localScores, setLocalScores] = useState<Record<string, { home: string; away: string }>>({});
 
@@ -24,6 +24,7 @@ function ResultsTab({ matches }: { matches: Match[] }) {
         homeScore: Number(s.home),
         awayScore: Number(s.away),
       });
+      onUpdate();
     } finally {
       setSaving(null);
     }
@@ -34,6 +35,17 @@ function ResultsTab({ matches }: { matches: Match[] }) {
     try {
       await api.put(`/admin/matches/${match.id}/result`, { homeScore: '', awayScore: '' });
       setLocalScores(prev => ({ ...prev, [match.id]: { home: '', away: '' } }));
+      onUpdate();
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  async function toggleLock(match: Match) {
+    setSaving(`lock-${match.id}`);
+    try {
+      await api.put(`/admin/matches/${match.id}/lock-result`, { locked: !match.resultLocked });
+      onUpdate();
     } finally {
       setSaving(null);
     }
@@ -44,37 +56,53 @@ function ResultsTab({ matches }: { matches: Match[] }) {
 
   return (
     <div>
-      <p className="text-gray-400 text-sm mb-4">Introduce los resultados — la clasificación y las tablas se actualizan automáticamente.</p>
+      <p className="text-gray-400 text-sm mb-4">
+        Introduce los resultados — la clasificación y las tablas se actualizan automáticamente.
+        Cuando un resultado sea definitivo, bloquéalo con 🔒 para que no pueda cambiarse por error.
+      </p>
       {groups.map(group => (
         <div key={group} className="mb-6">
           <h3 className="text-yellow-400 font-semibold mb-2 text-sm uppercase">Grupo {group}</h3>
           <div className="space-y-2">
             {groupMatches.filter(m => m.group === group).map(match => {
               const s = getScore(match);
+              const locked = match.resultLocked;
               return (
                 <div key={match.id} className="flex items-center gap-3 bg-gray-800 rounded-lg px-4 py-2.5">
                   <span className="flex-1 text-right text-sm text-white">{match.homeTeam}</span>
                   <input
-                    type="number" min="0" max="20" value={s.home}
+                    type="number" min="0" max="20" value={s.home} disabled={locked}
                     onChange={e => setLocalScores(prev => ({ ...prev, [match.id]: { ...getScore(match), home: e.target.value } }))}
-                    className="w-10 text-center bg-gray-700 border border-gray-600 rounded py-1 text-white text-sm focus:outline-none focus:border-yellow-500"
+                    className="w-10 text-center bg-gray-700 border border-gray-600 rounded py-1 text-white text-sm focus:outline-none focus:border-yellow-500 disabled:opacity-50"
                   />
                   <span className="text-gray-500">:</span>
                   <input
-                    type="number" min="0" max="20" value={s.away}
+                    type="number" min="0" max="20" value={s.away} disabled={locked}
                     onChange={e => setLocalScores(prev => ({ ...prev, [match.id]: { ...getScore(match), away: e.target.value } }))}
-                    className="w-10 text-center bg-gray-700 border border-gray-600 rounded py-1 text-white text-sm focus:outline-none focus:border-yellow-500"
+                    className="w-10 text-center bg-gray-700 border border-gray-600 rounded py-1 text-white text-sm focus:outline-none focus:border-yellow-500 disabled:opacity-50"
                   />
                   <span className="flex-1 text-sm text-white">{match.awayTeam}</span>
                   <button
                     onClick={() => saveResult(match)}
-                    disabled={saving === match.id}
+                    disabled={saving === match.id || locked}
                     className="px-3 py-1 bg-yellow-500 hover:bg-yellow-400 text-gray-900 text-xs font-bold rounded disabled:opacity-50"
                   >
                     {saving === match.id ? '...' : 'Guardar'}
                   </button>
-                  {match.homeScore !== null && (
+                  {match.homeScore !== null && !locked && (
                     <button onClick={() => clearResult(match)} className="text-xs text-red-400 hover:text-red-300">✕</button>
+                  )}
+                  {match.homeScore !== null && (
+                    <button
+                      onClick={() => toggleLock(match)}
+                      disabled={saving === `lock-${match.id}`}
+                      title={locked ? 'Resultado bloqueado — clic para desbloquear' : 'Bloquear resultado definitivo'}
+                      className={`text-xs px-2 py-1 rounded transition-colors ${
+                        locked ? 'bg-red-900/40 text-red-400 hover:bg-red-900/60' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                      }`}
+                    >
+                      {locked ? '🔒' : '🔓'}
+                    </button>
                   )}
                 </div>
               );
@@ -110,31 +138,53 @@ function KnockoutMatchRow({ match, onUpdate }: { match: Match; onUpdate: () => v
     } finally { setSaving(null); }
   }
 
+  async function toggleLock() {
+    setSaving('lock');
+    try {
+      await api.put(`/admin/matches/${match.id}/lock-result`, { locked: !match.resultLocked });
+      onUpdate();
+    } finally { setSaving(null); }
+  }
+
+  const locked = match.resultLocked;
+
   return (
     <div className="bg-gray-800 rounded-lg p-3">
       <div className="text-xs text-gray-500 mb-2">{match.label}</div>
       <div className="flex gap-2 items-center mb-2">
-        <input value={home} onChange={e => setHome(e.target.value)} placeholder="Equipo local"
-          className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-yellow-500" />
+        <input value={home} onChange={e => setHome(e.target.value)} placeholder="Equipo local" disabled={locked}
+          className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-yellow-500 disabled:opacity-50" />
         <span className="text-gray-500">vs</span>
-        <input value={away} onChange={e => setAway(e.target.value)} placeholder="Equipo visitante"
-          className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-yellow-500" />
-        <button onClick={saveTeams} disabled={saving === 'teams'}
+        <input value={away} onChange={e => setAway(e.target.value)} placeholder="Equipo visitante" disabled={locked}
+          className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-yellow-500 disabled:opacity-50" />
+        <button onClick={saveTeams} disabled={saving === 'teams' || locked}
           className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded disabled:opacity-50">
           {saving === 'teams' ? '...' : 'Teams'}
         </button>
       </div>
       {match.homeTeam !== 'TBD' && (
         <div className="flex gap-2 items-center">
-          <input type="number" value={hs} onChange={e => setHs(e.target.value)} min="0" max="20"
-            className="w-12 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-yellow-500" />
+          <input type="number" value={hs} onChange={e => setHs(e.target.value)} min="0" max="20" disabled={locked}
+            className="w-12 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-yellow-500 disabled:opacity-50" />
           <span className="text-gray-500">:</span>
-          <input type="number" value={as_} onChange={e => setAs(e.target.value)} min="0" max="20"
-            className="w-12 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-yellow-500" />
-          <button onClick={saveResult} disabled={saving === 'result'}
+          <input type="number" value={as_} onChange={e => setAs(e.target.value)} min="0" max="20" disabled={locked}
+            className="w-12 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-yellow-500 disabled:opacity-50" />
+          <button onClick={saveResult} disabled={saving === 'result' || locked}
             className="px-3 py-1 bg-yellow-500 hover:bg-yellow-400 text-gray-900 text-xs font-bold rounded disabled:opacity-50">
             {saving === 'result' ? '...' : 'Resultado'}
           </button>
+          {match.homeScore !== null && (
+            <button
+              onClick={toggleLock}
+              disabled={saving === 'lock'}
+              title={locked ? 'Resultado bloqueado — clic para desbloquear' : 'Bloquear resultado definitivo'}
+              className={`text-xs px-2 py-1 rounded transition-colors ${
+                locked ? 'bg-red-900/40 text-red-400 hover:bg-red-900/60' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+              }`}
+            >
+              {locked ? '🔒' : '🔓'}
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -173,6 +223,17 @@ function KnockoutTab({ matches, onUpdate }: { matches: Match[]; onUpdate: () => 
 }
 
 
+const PHASE_ORDER: Phase[] = ['group', 'round_of_32', 'round_of_16', 'quarterfinal', 'semifinal', 'third_place', 'final'];
+const PHASE_LABELS: Record<Phase, string> = {
+  group: 'Fase de grupos',
+  round_of_32: 'Ronda de 32',
+  round_of_16: 'Octavos de final',
+  quarterfinal: 'Cuartos de final',
+  semifinal: 'Semifinal',
+  third_place: 'Tercer puesto',
+  final: 'Final',
+};
+
 function ScoringTab() {
   const [config, setConfig] = useState<Config | null>(null);
   const [saved, setSaved] = useState(false);
@@ -190,38 +251,61 @@ function ScoringTab() {
 
   if (!config) return <div className="text-gray-400">Cargando...</div>;
   const s = config.scoring;
+  const total = s.exactScore + s.goalDifferenceScore + s.correctOutcomeScore;
+
+  function setMultiplier(phase: Phase, value: number) {
+    setConfig({ ...config!, scoring: { ...s, phaseMultipliers: { ...s.phaseMultipliers, [phase]: value } } });
+  }
 
   return (
     <div className="max-w-md space-y-6">
-      <p className="text-gray-400 text-sm">Reglas de puntuación para todos los partidos. Los cambios se aplican de inmediato a la clasificación.</p>
+      <p className="text-gray-400 text-sm">
+        Reglas de puntuación base — se suman todas las condiciones que aciertes (un resultado exacto también
+        acierta la diferencia de goles y el signo). Los cambios se aplican de inmediato a la clasificación.
+      </p>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm text-gray-300 mb-1">Puntos por resultado exacto</label>
+          <label className="block text-sm text-gray-300 mb-1">🎯 Resultado exacto</label>
           <input type="number" min="0" value={s.exactScore}
             onChange={e => setConfig({ ...config, scoring: { ...s, exactScore: Number(e.target.value) } })}
             className="w-24 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
         </div>
 
         <div>
-          <label className="block text-sm text-gray-300 mb-1">Puntos por acierto de signo (victoria/empate)</label>
-          <input type="number" min="0" value={s.correctOutcome}
-            onChange={e => setConfig({ ...config, scoring: { ...s, correctOutcome: Number(e.target.value) } })}
+          <label className="block text-sm text-gray-300 mb-1">📊 Diferencia de goles correcta</label>
+          <input type="number" min="0" value={s.goalDifferenceScore}
+            onChange={e => setConfig({ ...config, scoring: { ...s, goalDifferenceScore: Number(e.target.value) } })}
             className="w-24 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
         </div>
 
         <div>
-          <label className="block text-sm text-gray-300 mb-1">¿Cómo se calculan los puntos?</label>
-          <select value={s.stacking}
-            onChange={e => setConfig({ ...config, scoring: { ...s, stacking: e.target.value as 'exclusive' | 'additive' } })}
-            className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500">
-            <option value="exclusive">Exclusivo — solo cuenta el mejor resultado (por defecto)</option>
-            <option value="additive">Aditivo — los puntos se suman</option>
-          </select>
-          <p className="text-xs text-gray-500 mt-1">
-            Exclusivo: el resultado exacto da {s.exactScore} pts, O el acierto de signo da {s.correctOutcome} pts.<br />
-            Aditivo: con resultado exacto se obtienen {s.exactScore + s.correctOutcome} pts en total.
-          </p>
+          <label className="block text-sm text-gray-300 mb-1">✅ Signo correcto (victoria/empate)</label>
+          <input type="number" min="0" value={s.correctOutcomeScore}
+            onChange={e => setConfig({ ...config, scoring: { ...s, correctOutcomeScore: Number(e.target.value) } })}
+            className="w-24 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
+        </div>
+
+        <p className="text-xs text-gray-500">
+          Un pronóstico perfecto suma {s.exactScore} + {s.goalDifferenceScore} + {s.correctOutcomeScore} = <span className="text-yellow-400 font-bold">{total} pts</span> (antes del multiplicador de fase).
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-sm text-gray-300 mb-2">🔢 Multiplicador por fase</label>
+        <p className="text-xs text-gray-500 mb-3">Los puntos de cada partido se multiplican según la fase — las rondas eliminatorias valen más.</p>
+        <div className="space-y-2">
+          {PHASE_ORDER.map(phase => (
+            <div key={phase} className="flex items-center justify-between bg-gray-800/50 border border-gray-700 rounded px-3 py-2">
+              <span className="text-sm text-gray-300">{PHASE_LABELS[phase]}</span>
+              <div className="flex items-center gap-2">
+                <input type="number" min="1" value={s.phaseMultipliers[phase] ?? 1}
+                  onChange={e => setMultiplier(phase, Number(e.target.value))}
+                  className="w-16 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-center text-white focus:outline-none focus:border-yellow-500" />
+                <span className="text-xs text-gray-500">×</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -323,6 +407,75 @@ function BonusRulesEditor({ config, setConfig }: { config: Config; setConfig: (c
             + Crear regla
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function formatDeadline(iso: string) {
+  return new Date(iso).toLocaleString('es-ES', {
+    weekday: 'short', day: '2-digit', month: '2-digit',
+    hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin'
+  });
+}
+
+function PhasesTab({ matches }: { matches: Match[] }) {
+  const [config, setConfig] = useState<Config | null>(null);
+  const [saving, setSaving] = useState<Phase | null>(null);
+
+  useEffect(() => {
+    api.get('/admin/config').then(r => setConfig(r.data));
+  }, []);
+
+  async function toggle(phase: Phase) {
+    if (!config) return;
+    const next = !config.phaseUnlocks[phase];
+    setSaving(phase);
+    try {
+      const { data } = await api.put('/admin/config', { phaseUnlocks: { [phase]: next } });
+      setConfig(data);
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  if (!config) return <div className="text-gray-400">Cargando...</div>;
+
+  return (
+    <div className="max-w-md">
+      <p className="text-gray-400 text-sm mb-4">
+        Por defecto solo está abierta la fase de grupos. Abre las siguientes fases manualmente cuando quieras
+        que los participantes puedan pronosticar — cada partido también se cierra automáticamente al empezar.
+      </p>
+      <div className="space-y-2">
+        {PHASE_ORDER.map(phase => {
+          const unlocked = config.phaseUnlocks[phase];
+          const phaseMatches = matches.filter(m => m.phase === phase);
+          const firstKickoff = phaseMatches.length
+            ? phaseMatches.reduce((min, m) => (new Date(m.kickoff) < new Date(min.kickoff) ? m : min)).kickoff
+            : null;
+          return (
+            <div key={phase} className="flex items-center justify-between bg-gray-800 border border-gray-700 rounded-lg px-4 py-3">
+              <div>
+                <div className="text-sm font-medium text-white">{PHASE_LABELS[phase]}</div>
+                {firstKickoff && (
+                  <div className="text-xs text-gray-500 mt-0.5">Primer partido: {formatDeadline(firstKickoff)}</div>
+                )}
+              </div>
+              <button
+                onClick={() => toggle(phase)}
+                disabled={saving === phase}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                  unlocked
+                    ? 'bg-green-900/40 text-green-400 hover:bg-green-900/60'
+                    : 'bg-red-900/40 text-red-400 hover:bg-red-900/60'
+                }`}
+              >
+                {saving === phase ? '...' : unlocked ? '🔓 Abierta' : '🔒 Cerrada'}
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -602,6 +755,7 @@ export default function AdminPage() {
   const tabs: { key: Tab; label: string }[] = [
     { key: 'results', label: '📋 Resultados' },
     { key: 'knockout', label: '🏆 Eliminatorias' },
+    { key: 'phases', label: '🔓 Fases' },
     { key: 'scoring', label: '⚙️ Reglas de puntos' },
     { key: 'special', label: '🏆 Especiales' },
     { key: 'predictions', label: '👁 Ver pronósticos' },
@@ -625,8 +779,9 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {tab === 'results' && <ResultsTab matches={matches} />}
+      {tab === 'results' && <ResultsTab matches={matches} onUpdate={loadMatches} />}
       {tab === 'knockout' && <KnockoutTab matches={matches} onUpdate={loadMatches} />}
+      {tab === 'phases' && <PhasesTab matches={matches} />}
       {tab === 'scoring' && <ScoringTab />}
       {tab === 'special' && <SpecialTab />}
       {tab === 'predictions' && <PredictionsViewTab matches={matches} />}

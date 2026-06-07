@@ -24,9 +24,14 @@ router.post('/', requireAuth, async (req, res) => {
   const match = matches.find(m => m.id === matchId);
   if (!match) return res.status(404).json({ error: 'Spiel nicht gefunden' });
 
-  // Server-side lock enforcement
+  // Server-side lock enforcement — Anpfiff-Zeit UND Admin-Phasenfreigabe
   if (Date.now() >= new Date(match.kickoff).getTime()) {
     return res.status(403).json({ error: 'Tipp gesperrt — Spiel hat bereits begonnen' });
+  }
+  const config = await readJSON('config.json');
+  const phaseUnlocks = config.phaseUnlocks || {};
+  if (phaseUnlocks[match.phase] === false) {
+    return res.status(403).json({ error: 'Tipp gesperrt — diese Phase ist vom Admin noch nicht freigegeben' });
   }
 
   const predictions = await readJSON('predictions.json');

@@ -20,20 +20,32 @@ const BONUS_CONDITIONS = {
 };
 
 // Returns points for a single prediction against an actual result.
-// config.stacking: 'exclusive' = best rule only | 'additive' = rules stack
+//
+// Base scoring is cumulative — every condition the prediction satisfies adds its
+// points (exact result implies correct goal difference implies correct outcome,
+// so a perfect hit collects all three). The sum (base + custom bonus rules) is
+// then multiplied by the phase multiplier (knockout rounds count for more).
 function scorePrediction(prediction, match, config) {
   if (match.homeScore === null || match.awayScore === null) return 0;
   if (prediction.homeScore === null || prediction.awayScore === null) return 0;
 
-  const { exactScore, correctOutcome, stacking, bonusRules = [] } = config.scoring;
+  const { exactScore, goalDifferenceScore, correctOutcomeScore, phaseMultipliers = {}, bonusRules = [] } = config.scoring;
 
   const isExact =
     prediction.homeScore === match.homeScore &&
     prediction.awayScore === match.awayScore;
 
+  const isCorrectGoalDifference =
+    (prediction.homeScore - prediction.awayScore) === (match.homeScore - match.awayScore);
+
   const isCorrectOutcome =
     getOutcome(prediction.homeScore, prediction.awayScore) ===
     getOutcome(match.homeScore, match.awayScore);
+
+  let basePoints = 0;
+  if (isExact) basePoints += exactScore;
+  if (isCorrectGoalDifference) basePoints += goalDifferenceScore;
+  if (isCorrectOutcome) basePoints += correctOutcomeScore;
 
   let bonusPoints = 0;
   for (const rule of bonusRules) {
@@ -43,18 +55,8 @@ function scorePrediction(prediction, match, config) {
     }
   }
 
-  if (stacking === 'additive') {
-    let total = 0;
-    if (isExact) total += exactScore;
-    else if (isCorrectOutcome) total += correctOutcome;
-    total += bonusPoints;
-    return total;
-  }
-
-  // exclusive: best matching rule only (+ bonus on top)
-  if (isExact) return exactScore + bonusPoints;
-  if (isCorrectOutcome) return correctOutcome + bonusPoints;
-  return 0;
+  const multiplier = phaseMultipliers[match.phase] ?? 1;
+  return (basePoints + bonusPoints) * multiplier;
 }
 
 function normalizeName(value) {

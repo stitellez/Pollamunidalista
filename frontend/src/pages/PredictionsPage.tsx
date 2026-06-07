@@ -222,6 +222,30 @@ function SpecialPredictionsCard() {
   );
 }
 
+function PhaseDeadlineBanner({ matches }: { matches: Match[] }) {
+  const phaseUnlocked = matches.every(m => m.phaseUnlocked);
+  const playable = matches.filter(m => m.homeTeam !== 'TBD' && !m.locked);
+
+  if (!phaseUnlocked) {
+    return (
+      <div className="mb-4 text-sm bg-red-900/30 text-red-300 border border-red-900/50 px-4 py-3 rounded-lg">
+        🔒 Esta fase todavía no está abierta para pronósticos — el administrador la abrirá cuando corresponda.
+      </div>
+    );
+  }
+
+  if (playable.length === 0) return null;
+
+  const earliest = playable.reduce((min, m) => (new Date(m.kickoff) < new Date(min.kickoff) ? m : min));
+
+  return (
+    <div className="mb-4 text-sm bg-yellow-900/20 text-yellow-300 border border-yellow-900/40 px-4 py-3 rounded-lg">
+      ⏰ Plazo para pronosticar esta fase: hasta el saque inicial de cada partido — el primero empieza el{' '}
+      <span className="font-semibold">{formatKickoff(earliest.kickoff)}</span>.
+    </div>
+  );
+}
+
 export default function PredictionsPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [myPreds, setMyPreds] = useState<Prediction[]>([]);
@@ -294,6 +318,10 @@ export default function PredictionsPage() {
           🏆 Especiales
         </button>
       </div>
+
+      {activePhase !== 'special' && visibleMatches.length > 0 && (
+        <PhaseDeadlineBanner matches={visibleMatches} />
+      )}
 
       {activePhase === 'special' ? (
         <SpecialPredictionsCard />

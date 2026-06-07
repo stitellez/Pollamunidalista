@@ -19,8 +19,26 @@ router.put('/matches/:id/result', async (req, res) => {
   const idx = matches.findIndex(m => m.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Spiel nicht gefunden' });
 
+  if (matches[idx].resultLocked) {
+    return res.status(403).json({ error: 'Ergebnis ist gesperrt — erst entsperren, um es zu ändern' });
+  }
+
   matches[idx].homeScore = homeScore === '' ? null : Number(homeScore);
   matches[idx].awayScore = awayScore === '' ? null : Number(awayScore);
+  await writeJSON('matches.json', matches);
+  res.json(matches[idx]);
+});
+
+// PUT /api/admin/matches/:id/lock-result — Ergebnis sperren/entsperren (verhindert versehentliche Änderungen)
+router.put('/matches/:id/lock-result', async (req, res) => {
+  const { locked } = req.body;
+  if (typeof locked !== 'boolean') return res.status(400).json({ error: 'locked (boolean) erforderlich' });
+
+  const matches = await readJSON('matches.json');
+  const idx = matches.findIndex(m => m.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Spiel nicht gefunden' });
+
+  matches[idx].resultLocked = locked;
   await writeJSON('matches.json', matches);
   res.json(matches[idx]);
 });
@@ -45,13 +63,16 @@ router.get('/config', async (_req, res) => {
   res.json(await readJSON('config.json'));
 });
 
-// PUT /api/admin/config — Scoring-Regeln speichern
+// PUT /api/admin/config — Scoring-Regeln, Phasen-Freigaben & Spezial-Konfiguration speichern
 router.put('/config', async (req, res) => {
-  const { scoring, special } = req.body;
-  if (!scoring && !special) return res.status(400).json({ error: 'scoring oder special object erforderlich' });
+  const { scoring, special, phaseUnlocks } = req.body;
+  if (!scoring && !special && !phaseUnlocks) {
+    return res.status(400).json({ error: 'scoring, special oder phaseUnlocks object erforderlich' });
+  }
 
   const config = await readJSON('config.json');
   if (scoring) config.scoring = { ...config.scoring, ...scoring };
+  if (phaseUnlocks) config.phaseUnlocks = { ...config.phaseUnlocks, ...phaseUnlocks };
   if (special) {
     config.special = {
       ...config.special,

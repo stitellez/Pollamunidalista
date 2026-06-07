@@ -8,7 +8,8 @@
     "kickoff": "2026-06-11T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Estadio Azteca, Mexico City"
+    "venue": "Estadio Azteca, Mexico City",
+    "resultLocked": false
   },
   {
     "id": "m2",
@@ -19,7 +20,8 @@
     "kickoff": "2026-06-12T02:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Estadio Akron, Zapopan"
+    "venue": "Estadio Akron, Zapopan",
+    "resultLocked": false
   },
   {
     "id": "m3",
@@ -30,7 +32,8 @@
     "kickoff": "2026-06-18T16:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Mercedes-Benz Stadium, Atlanta"
+    "venue": "Mercedes-Benz Stadium, Atlanta",
+    "resultLocked": false
   },
   {
     "id": "m4",
@@ -41,7 +44,8 @@
     "kickoff": "2026-06-19T01:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Estadio Akron, Zapopan"
+    "venue": "Estadio Akron, Zapopan",
+    "resultLocked": false
   },
   {
     "id": "m5",
@@ -52,7 +56,8 @@
     "kickoff": "2026-06-25T01:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Estadio Azteca, Mexico City"
+    "venue": "Estadio Azteca, Mexico City",
+    "resultLocked": false
   },
   {
     "id": "m6",
@@ -63,7 +68,8 @@
     "kickoff": "2026-06-25T01:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Estadio BBVA, Guadalupe"
+    "venue": "Estadio BBVA, Guadalupe",
+    "resultLocked": false
   },
   {
     "id": "m7",
@@ -74,7 +80,8 @@
     "kickoff": "2026-06-12T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "BMO Field, Toronto"
+    "venue": "BMO Field, Toronto",
+    "resultLocked": false
   },
   {
     "id": "m8",
@@ -85,7 +92,8 @@
     "kickoff": "2026-06-13T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Levi's Stadium, Santa Clara"
+    "venue": "Levi's Stadium, Santa Clara",
+    "resultLocked": false
   },
   {
     "id": "m9",
@@ -96,7 +104,8 @@
     "kickoff": "2026-06-18T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "SoFi Stadium, Inglewood"
+    "venue": "SoFi Stadium, Inglewood",
+    "resultLocked": false
   },
   {
     "id": "m10",
@@ -107,7 +116,8 @@
     "kickoff": "2026-06-18T22:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "BC Place, Vancouver"
+    "venue": "BC Place, Vancouver",
+    "resultLocked": false
   },
   {
     "id": "m11",
@@ -118,7 +128,8 @@
     "kickoff": "2026-06-24T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "BC Place, Vancouver"
+    "venue": "BC Place, Vancouver",
+    "resultLocked": false
   },
   {
     "id": "m12",
@@ -129,7 +140,8 @@
     "kickoff": "2026-06-24T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Lumen Field, Seattle"
+    "venue": "Lumen Field, Seattle",
+    "resultLocked": false
   },
   {
     "id": "m13",
@@ -140,7 +152,8 @@
     "kickoff": "2026-06-13T22:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "MetLife Stadium, East Rutherford"
+    "venue": "MetLife Stadium, East Rutherford",
+    "resultLocked": false
   },
   {
     "id": "m14",
@@ -151,7 +164,8 @@
     "kickoff": "2026-06-14T01:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Gillette Stadium, Foxborough"
+    "venue": "Gillette Stadium, Foxborough",
+    "resultLocked": false
   },
   {
     "id": "m15",
@@ -162,7 +176,8 @@
     "kickoff": "2026-06-19T22:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Gillette Stadium, Foxborough"
+    "venue": "Gillette Stadium, Foxborough",
+    "resultLocked": false
   },
   {
     "id": "m16",
@@ -173,7 +188,8 @@
     "kickoff": "2026-06-20T00:30:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Lincoln Financial Field, Philadelphia"
+    "venue": "Lincoln Financial Field, Philadelphia",
+    "resultLocked": false
   },
   {
     "id": "m17",
@@ -184,7 +200,8 @@
     "kickoff": "2026-06-24T22:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Hard Rock Stadium, Miami Gardens"
+    "venue": "Hard Rock Stadium, Miami Gardens",
+    "resultLocked": false
   },
   {
     "id": "m18",
@@ -195,7 +212,8 @@
     "kickoff": "2026-06-24T22:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Mercedes-Benz Stadium, Atlanta"
+    "venue": "Mercedes-Benz Stadium, Atlanta",
+    "resultLocked": false
   },
   {
     "id": "m19",
@@ -206,7 +224,8 @@
     "kickoff": "2026-06-13T01:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "SoFi Stadium, Inglewood"
+    "venue": "SoFi Stadium, Inglewood",
+    "resultLocked": false
   },
   {
     "id": "m20",
@@ -217,7 +236,8 @@
     "kickoff": "2026-06-14T04:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "BC Place, Vancouver"
+    "venue": "BC Place, Vancouver",
+    "resultLocked": false
   },
   {
     "id": "m21",
@@ -228,7 +248,8 @@
     "kickoff": "2026-06-19T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Lumen Field, Seattle"
+    "venue": "Lumen Field, Seattle",
+    "resultLocked": false
   },
   {
     "id": "m22",
@@ -239,7 +260,8 @@
     "kickoff": "2026-06-20T03:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Levi's Stadium, Santa Clara"
+    "venue": "Levi's Stadium, Santa Clara",
+    "resultLocked": false
   },
   {
     "id": "m23",
@@ -250,7 +272,8 @@
     "kickoff": "2026-06-26T02:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "SoFi Stadium, Inglewood"
+    "venue": "SoFi Stadium, Inglewood",
+    "resultLocked": false
   },
   {
     "id": "m24",
@@ -261,7 +284,8 @@
     "kickoff": "2026-06-26T02:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Levi's Stadium, Santa Clara"
+    "venue": "Levi's Stadium, Santa Clara",
+    "resultLocked": false
   },
   {
     "id": "m25",
@@ -272,7 +296,8 @@
     "kickoff": "2026-06-14T17:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "NRG Stadium, Houston"
+    "venue": "NRG Stadium, Houston",
+    "resultLocked": false
   },
   {
     "id": "m26",
@@ -283,7 +308,8 @@
     "kickoff": "2026-06-14T23:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Lincoln Financial Field, Philadelphia"
+    "venue": "Lincoln Financial Field, Philadelphia",
+    "resultLocked": false
   },
   {
     "id": "m27",
@@ -294,7 +320,8 @@
     "kickoff": "2026-06-20T20:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "BMO Field, Toronto"
+    "venue": "BMO Field, Toronto",
+    "resultLocked": false
   },
   {
     "id": "m28",
@@ -305,7 +332,8 @@
     "kickoff": "2026-06-21T00:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Arrowhead Stadium, Kansas City"
+    "venue": "Arrowhead Stadium, Kansas City",
+    "resultLocked": false
   },
   {
     "id": "m29",
@@ -316,7 +344,8 @@
     "kickoff": "2026-06-25T20:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Lincoln Financial Field, Philadelphia"
+    "venue": "Lincoln Financial Field, Philadelphia",
+    "resultLocked": false
   },
   {
     "id": "m30",
@@ -327,7 +356,8 @@
     "kickoff": "2026-06-25T20:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "MetLife Stadium, East Rutherford"
+    "venue": "MetLife Stadium, East Rutherford",
+    "resultLocked": false
   },
   {
     "id": "m31",
@@ -338,7 +368,8 @@
     "kickoff": "2026-06-14T20:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "AT&T Stadium, Arlington"
+    "venue": "AT&T Stadium, Arlington",
+    "resultLocked": false
   },
   {
     "id": "m32",
@@ -349,7 +380,8 @@
     "kickoff": "2026-06-15T02:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Estadio BBVA, Guadalupe"
+    "venue": "Estadio BBVA, Guadalupe",
+    "resultLocked": false
   },
   {
     "id": "m33",
@@ -360,7 +392,8 @@
     "kickoff": "2026-06-20T17:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "NRG Stadium, Houston"
+    "venue": "NRG Stadium, Houston",
+    "resultLocked": false
   },
   {
     "id": "m34",
@@ -371,7 +404,8 @@
     "kickoff": "2026-06-21T04:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Estadio BBVA, Guadalupe"
+    "venue": "Estadio BBVA, Guadalupe",
+    "resultLocked": false
   },
   {
     "id": "m35",
@@ -382,7 +416,8 @@
     "kickoff": "2026-06-25T23:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "AT&T Stadium, Arlington"
+    "venue": "AT&T Stadium, Arlington",
+    "resultLocked": false
   },
   {
     "id": "m36",
@@ -393,7 +428,8 @@
     "kickoff": "2026-06-25T23:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Arrowhead Stadium, Kansas City"
+    "venue": "Arrowhead Stadium, Kansas City",
+    "resultLocked": false
   },
   {
     "id": "m37",
@@ -404,7 +440,8 @@
     "kickoff": "2026-06-15T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Lumen Field, Seattle"
+    "venue": "Lumen Field, Seattle",
+    "resultLocked": false
   },
   {
     "id": "m38",
@@ -415,7 +452,8 @@
     "kickoff": "2026-06-16T01:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "SoFi Stadium, Inglewood"
+    "venue": "SoFi Stadium, Inglewood",
+    "resultLocked": false
   },
   {
     "id": "m39",
@@ -426,7 +464,8 @@
     "kickoff": "2026-06-21T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "SoFi Stadium, Inglewood"
+    "venue": "SoFi Stadium, Inglewood",
+    "resultLocked": false
   },
   {
     "id": "m40",
@@ -437,7 +476,8 @@
     "kickoff": "2026-06-22T01:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "BC Place, Vancouver"
+    "venue": "BC Place, Vancouver",
+    "resultLocked": false
   },
   {
     "id": "m41",
@@ -448,7 +488,8 @@
     "kickoff": "2026-06-27T03:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Lumen Field, Seattle"
+    "venue": "Lumen Field, Seattle",
+    "resultLocked": false
   },
   {
     "id": "m42",
@@ -459,7 +500,8 @@
     "kickoff": "2026-06-27T03:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "BC Place, Vancouver"
+    "venue": "BC Place, Vancouver",
+    "resultLocked": false
   },
   {
     "id": "m43",
@@ -470,7 +512,8 @@
     "kickoff": "2026-06-15T16:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Mercedes-Benz Stadium, Atlanta"
+    "venue": "Mercedes-Benz Stadium, Atlanta",
+    "resultLocked": false
   },
   {
     "id": "m44",
@@ -481,7 +524,8 @@
     "kickoff": "2026-06-15T22:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Hard Rock Stadium, Miami Gardens"
+    "venue": "Hard Rock Stadium, Miami Gardens",
+    "resultLocked": false
   },
   {
     "id": "m45",
@@ -492,7 +536,8 @@
     "kickoff": "2026-06-21T16:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Mercedes-Benz Stadium, Atlanta"
+    "venue": "Mercedes-Benz Stadium, Atlanta",
+    "resultLocked": false
   },
   {
     "id": "m46",
@@ -503,7 +548,8 @@
     "kickoff": "2026-06-21T22:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Hard Rock Stadium, Miami Gardens"
+    "venue": "Hard Rock Stadium, Miami Gardens",
+    "resultLocked": false
   },
   {
     "id": "m47",
@@ -514,7 +560,8 @@
     "kickoff": "2026-06-27T00:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "NRG Stadium, Houston"
+    "venue": "NRG Stadium, Houston",
+    "resultLocked": false
   },
   {
     "id": "m48",
@@ -525,7 +572,8 @@
     "kickoff": "2026-06-27T00:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Estadio Akron, Zapopan"
+    "venue": "Estadio Akron, Zapopan",
+    "resultLocked": false
   },
   {
     "id": "m49",
@@ -536,7 +584,8 @@
     "kickoff": "2026-06-16T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "MetLife Stadium, East Rutherford"
+    "venue": "MetLife Stadium, East Rutherford",
+    "resultLocked": false
   },
   {
     "id": "m50",
@@ -547,7 +596,8 @@
     "kickoff": "2026-06-16T22:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Gillette Stadium, Foxborough"
+    "venue": "Gillette Stadium, Foxborough",
+    "resultLocked": false
   },
   {
     "id": "m51",
@@ -558,7 +608,8 @@
     "kickoff": "2026-06-22T21:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Lincoln Financial Field, Philadelphia"
+    "venue": "Lincoln Financial Field, Philadelphia",
+    "resultLocked": false
   },
   {
     "id": "m52",
@@ -569,7 +620,8 @@
     "kickoff": "2026-06-23T00:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "MetLife Stadium, East Rutherford"
+    "venue": "MetLife Stadium, East Rutherford",
+    "resultLocked": false
   },
   {
     "id": "m53",
@@ -580,7 +632,8 @@
     "kickoff": "2026-06-26T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Gillette Stadium, Foxborough"
+    "venue": "Gillette Stadium, Foxborough",
+    "resultLocked": false
   },
   {
     "id": "m54",
@@ -591,7 +644,8 @@
     "kickoff": "2026-06-26T19:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "BMO Field, Toronto"
+    "venue": "BMO Field, Toronto",
+    "resultLocked": false
   },
   {
     "id": "m55",
@@ -602,7 +656,8 @@
     "kickoff": "2026-06-17T01:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Arrowhead Stadium, Kansas City"
+    "venue": "Arrowhead Stadium, Kansas City",
+    "resultLocked": false
   },
   {
     "id": "m56",
@@ -613,7 +668,8 @@
     "kickoff": "2026-06-17T04:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Levi's Stadium, Santa Clara"
+    "venue": "Levi's Stadium, Santa Clara",
+    "resultLocked": false
   },
   {
     "id": "m57",
@@ -624,7 +680,8 @@
     "kickoff": "2026-06-22T17:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "AT&T Stadium, Arlington"
+    "venue": "AT&T Stadium, Arlington",
+    "resultLocked": false
   },
   {
     "id": "m58",
@@ -635,7 +692,8 @@
     "kickoff": "2026-06-23T03:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Levi's Stadium, Santa Clara"
+    "venue": "Levi's Stadium, Santa Clara",
+    "resultLocked": false
   },
   {
     "id": "m59",
@@ -646,7 +704,8 @@
     "kickoff": "2026-06-28T02:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Arrowhead Stadium, Kansas City"
+    "venue": "Arrowhead Stadium, Kansas City",
+    "resultLocked": false
   },
   {
     "id": "m60",
@@ -657,7 +716,8 @@
     "kickoff": "2026-06-28T02:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "AT&T Stadium, Arlington"
+    "venue": "AT&T Stadium, Arlington",
+    "resultLocked": false
   },
   {
     "id": "m61",
@@ -668,7 +728,8 @@
     "kickoff": "2026-06-17T17:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "NRG Stadium, Houston"
+    "venue": "NRG Stadium, Houston",
+    "resultLocked": false
   },
   {
     "id": "m62",
@@ -679,7 +740,8 @@
     "kickoff": "2026-06-18T02:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Estadio Azteca, Mexico City"
+    "venue": "Estadio Azteca, Mexico City",
+    "resultLocked": false
   },
   {
     "id": "m63",
@@ -690,7 +752,8 @@
     "kickoff": "2026-06-23T17:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "NRG Stadium, Houston"
+    "venue": "NRG Stadium, Houston",
+    "resultLocked": false
   },
   {
     "id": "m64",
@@ -701,7 +764,8 @@
     "kickoff": "2026-06-24T02:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Estadio Akron, Zapopan"
+    "venue": "Estadio Akron, Zapopan",
+    "resultLocked": false
   },
   {
     "id": "m65",
@@ -712,7 +776,8 @@
     "kickoff": "2026-06-27T23:30:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Hard Rock Stadium, Miami Gardens"
+    "venue": "Hard Rock Stadium, Miami Gardens",
+    "resultLocked": false
   },
   {
     "id": "m66",
@@ -723,7 +788,8 @@
     "kickoff": "2026-06-27T23:30:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Mercedes-Benz Stadium, Atlanta"
+    "venue": "Mercedes-Benz Stadium, Atlanta",
+    "resultLocked": false
   },
   {
     "id": "m67",
@@ -734,7 +800,8 @@
     "kickoff": "2026-06-17T20:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "AT&T Stadium, Arlington"
+    "venue": "AT&T Stadium, Arlington",
+    "resultLocked": false
   },
   {
     "id": "m68",
@@ -745,7 +812,8 @@
     "kickoff": "2026-06-17T23:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "BMO Field, Toronto"
+    "venue": "BMO Field, Toronto",
+    "resultLocked": false
   },
   {
     "id": "m69",
@@ -756,7 +824,8 @@
     "kickoff": "2026-06-23T20:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Gillette Stadium, Foxborough"
+    "venue": "Gillette Stadium, Foxborough",
+    "resultLocked": false
   },
   {
     "id": "m70",
@@ -767,7 +836,8 @@
     "kickoff": "2026-06-23T23:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "BMO Field, Toronto"
+    "venue": "BMO Field, Toronto",
+    "resultLocked": false
   },
   {
     "id": "m71",
@@ -778,7 +848,8 @@
     "kickoff": "2026-06-27T21:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "MetLife Stadium, East Rutherford"
+    "venue": "MetLife Stadium, East Rutherford",
+    "resultLocked": false
   },
   {
     "id": "m72",
@@ -789,7 +860,8 @@
     "kickoff": "2026-06-27T21:00:00Z",
     "homeScore": null,
     "awayScore": null,
-    "venue": "Lincoln Financial Field, Philadelphia"
+    "venue": "Lincoln Financial Field, Philadelphia",
+    "resultLocked": false
   },
   {
     "id": "r32_1",
@@ -801,7 +873,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1A vs 2B"
+    "label": "1A vs 2B",
+    "resultLocked": false
   },
   {
     "id": "r32_2",
@@ -813,7 +886,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1C vs 2D"
+    "label": "1C vs 2D",
+    "resultLocked": false
   },
   {
     "id": "r32_3",
@@ -825,7 +899,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1E vs 2F"
+    "label": "1E vs 2F",
+    "resultLocked": false
   },
   {
     "id": "r32_4",
@@ -837,7 +912,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1G vs 2H"
+    "label": "1G vs 2H",
+    "resultLocked": false
   },
   {
     "id": "r32_5",
@@ -849,7 +925,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1I vs 2J"
+    "label": "1I vs 2J",
+    "resultLocked": false
   },
   {
     "id": "r32_6",
@@ -861,7 +938,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1K vs 2L"
+    "label": "1K vs 2L",
+    "resultLocked": false
   },
   {
     "id": "r32_7",
@@ -873,7 +951,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1B vs 2A"
+    "label": "1B vs 2A",
+    "resultLocked": false
   },
   {
     "id": "r32_8",
@@ -885,7 +964,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1D vs 2C"
+    "label": "1D vs 2C",
+    "resultLocked": false
   },
   {
     "id": "r32_9",
@@ -897,7 +977,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1F vs 2E"
+    "label": "1F vs 2E",
+    "resultLocked": false
   },
   {
     "id": "r32_10",
@@ -909,7 +990,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1H vs 2G"
+    "label": "1H vs 2G",
+    "resultLocked": false
   },
   {
     "id": "r32_11",
@@ -921,7 +1003,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1J vs 2I"
+    "label": "1J vs 2I",
+    "resultLocked": false
   },
   {
     "id": "r32_12",
@@ -933,7 +1016,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "1L vs 2K"
+    "label": "1L vs 2K",
+    "resultLocked": false
   },
   {
     "id": "r32_13",
@@ -945,7 +1029,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "3. Platz Gruppe A/B/C/D vs 3. Platz"
+    "label": "3. Platz Gruppe A/B/C/D vs 3. Platz",
+    "resultLocked": false
   },
   {
     "id": "r32_14",
@@ -957,7 +1042,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "3. Platz Gruppe E/F/G/H vs 3. Platz"
+    "label": "3. Platz Gruppe E/F/G/H vs 3. Platz",
+    "resultLocked": false
   },
   {
     "id": "r32_15",
@@ -969,7 +1055,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "3. Platz Gruppe I/J/K/L vs 3. Platz"
+    "label": "3. Platz Gruppe I/J/K/L vs 3. Platz",
+    "resultLocked": false
   },
   {
     "id": "r32_16",
@@ -981,7 +1068,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "3. Platz Wildcard vs 3. Platz"
+    "label": "3. Platz Wildcard vs 3. Platz",
+    "resultLocked": false
   },
   {
     "id": "r16_1",
@@ -993,7 +1081,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "R32 W1 vs R32 W2"
+    "label": "R32 W1 vs R32 W2",
+    "resultLocked": false
   },
   {
     "id": "r16_2",
@@ -1005,7 +1094,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "R32 W3 vs R32 W4"
+    "label": "R32 W3 vs R32 W4",
+    "resultLocked": false
   },
   {
     "id": "r16_3",
@@ -1017,7 +1107,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "R32 W5 vs R32 W6"
+    "label": "R32 W5 vs R32 W6",
+    "resultLocked": false
   },
   {
     "id": "r16_4",
@@ -1029,7 +1120,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "R32 W7 vs R32 W8"
+    "label": "R32 W7 vs R32 W8",
+    "resultLocked": false
   },
   {
     "id": "r16_5",
@@ -1041,7 +1133,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "R32 W9 vs R32 W10"
+    "label": "R32 W9 vs R32 W10",
+    "resultLocked": false
   },
   {
     "id": "r16_6",
@@ -1053,7 +1146,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "R32 W11 vs R32 W12"
+    "label": "R32 W11 vs R32 W12",
+    "resultLocked": false
   },
   {
     "id": "r16_7",
@@ -1065,7 +1159,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "R32 W13 vs R32 W14"
+    "label": "R32 W13 vs R32 W14",
+    "resultLocked": false
   },
   {
     "id": "r16_8",
@@ -1077,7 +1172,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "R32 W15 vs R32 W16"
+    "label": "R32 W15 vs R32 W16",
+    "resultLocked": false
   },
   {
     "id": "qf_1",
@@ -1089,7 +1185,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "QF 1"
+    "label": "QF 1",
+    "resultLocked": false
   },
   {
     "id": "qf_2",
@@ -1101,7 +1198,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "QF 2"
+    "label": "QF 2",
+    "resultLocked": false
   },
   {
     "id": "qf_3",
@@ -1113,7 +1211,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "QF 3"
+    "label": "QF 3",
+    "resultLocked": false
   },
   {
     "id": "qf_4",
@@ -1125,7 +1224,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "QF 4"
+    "label": "QF 4",
+    "resultLocked": false
   },
   {
     "id": "qf_5",
@@ -1137,7 +1237,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "QF 5"
+    "label": "QF 5",
+    "resultLocked": false
   },
   {
     "id": "qf_6",
@@ -1149,7 +1250,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "QF 6"
+    "label": "QF 6",
+    "resultLocked": false
   },
   {
     "id": "qf_7",
@@ -1161,7 +1263,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "QF 7"
+    "label": "QF 7",
+    "resultLocked": false
   },
   {
     "id": "qf_8",
@@ -1173,7 +1276,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "TBD",
-    "label": "QF 8"
+    "label": "QF 8",
+    "resultLocked": false
   },
   {
     "id": "sf_1",
@@ -1185,7 +1289,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "MetLife Stadium, New York",
-    "label": "SF 1"
+    "label": "SF 1",
+    "resultLocked": false
   },
   {
     "id": "sf_2",
@@ -1197,7 +1302,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "Rose Bowl, Los Angeles",
-    "label": "SF 2"
+    "label": "SF 2",
+    "resultLocked": false
   },
   {
     "id": "sf_3",
@@ -1209,7 +1315,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "AT&T Stadium, Dallas",
-    "label": "SF 3"
+    "label": "SF 3",
+    "resultLocked": false
   },
   {
     "id": "sf_4",
@@ -1221,7 +1328,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "Estadio Azteca, Mexico City",
-    "label": "SF 4"
+    "label": "SF 4",
+    "resultLocked": false
   },
   {
     "id": "3rd",
@@ -1233,7 +1341,8 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "Hard Rock Stadium, Miami",
-    "label": "Spiel um Platz 3"
+    "label": "Spiel um Platz 3",
+    "resultLocked": false
   },
   {
     "id": "final",
@@ -1245,6 +1354,7 @@
     "homeScore": null,
     "awayScore": null,
     "venue": "MetLife Stadium, New York",
-    "label": "Finale"
+    "label": "Finale",
+    "resultLocked": false
   }
 ]

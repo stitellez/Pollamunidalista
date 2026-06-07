@@ -4,9 +4,11 @@ export interface User {
   role: 'admin' | 'user';
 }
 
+export type Phase = 'group' | 'round_of_32' | 'round_of_16' | 'quarterfinal' | 'semifinal' | 'third_place' | 'final';
+
 export interface Match {
   id: string;
-  phase: 'group' | 'round_of_32' | 'round_of_16' | 'quarterfinal' | 'semifinal' | 'third_place' | 'final';
+  phase: Phase;
   group: string | null;
   homeTeam: string;
   awayTeam: string;
@@ -16,6 +18,8 @@ export interface Match {
   venue: string;
   label?: string;
   locked: boolean;
+  phaseUnlocked: boolean;
+  resultLocked: boolean;
 }
 
 export interface Prediction {
@@ -70,13 +74,17 @@ export interface StandingRow {
 
 export interface ScoringConfig {
   exactScore: number;
-  correctOutcome: number;
-  stacking: 'exclusive' | 'additive';
+  goalDifferenceScore: number;
+  correctOutcomeScore: number;
+  phaseMultipliers: Record<Phase, number>;
   bonusRules: { name: string; type: string; points: number }[];
 }
 
+export type PhaseUnlocks = Record<Phase, boolean>;
+
 export interface Config {
   scoring: ScoringConfig;
+  phaseUnlocks: PhaseUnlocks;
   special: SpecialConfig;
 }
 
