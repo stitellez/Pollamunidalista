@@ -1,0 +1,9 @@
+{
+  "scoring": {
+    "exactScore": 3,
+    "correctOutcome": 1,
+    "stacking": "exclusive",
+    "bonusRules": []
+  },
+  "scoringNote": "stacking: 'exclusive' = bestes Ergebnis zaehlt | 'additive' = Punkte werden addiert"
+}
