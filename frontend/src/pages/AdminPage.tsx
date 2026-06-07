@@ -235,26 +235,36 @@ function ScoringTab() {
   );
 }
 
-const BONUS_RULE_TYPES: { value: string; label: string }[] = [
-  { value: 'correct_home_goals', label: 'Aciertas los goles del equipo local' },
-  { value: 'correct_away_goals', label: 'Aciertas los goles del equipo visitante' },
+const BONUS_CONDITIONS: { value: string; label: string }[] = [
+  { value: 'correct_home_goals', label: 'Aciertas los goles exactos del equipo local' },
+  { value: 'correct_away_goals', label: 'Aciertas los goles exactos del equipo visitante' },
+  { value: 'correct_goal_difference', label: 'Aciertas la diferencia de goles' },
+  { value: 'correct_total_goals', label: 'Aciertas el número total de goles del partido' },
+  { value: 'correct_draw', label: 'Aciertas un empate (predices empate Y el resultado es empate)' },
+  { value: 'both_teams_scored', label: 'Aciertas si ambos equipos marcan o no' },
 ];
 
-function bonusRuleLabel(type: string): string {
-  return BONUS_RULE_TYPES.find(t => t.value === type)?.label ?? type;
+function conditionLabel(type: string): string {
+  return BONUS_CONDITIONS.find(c => c.value === type)?.label ?? type;
 }
 
+type BonusRule = { name: string; type: string; points: number };
+
 function BonusRulesEditor({ config, setConfig }: { config: Config; setConfig: (c: Config) => void }) {
-  const [newType, setNewType] = useState(BONUS_RULE_TYPES[0].value);
+  const [newName, setNewName] = useState('');
+  const [newType, setNewType] = useState(BONUS_CONDITIONS[0].value);
   const [newPoints, setNewPoints] = useState(1);
   const rules = config.scoring.bonusRules ?? [];
 
-  function updateRules(rules: { type: string; points: number }[]) {
+  function updateRules(rules: BonusRule[]) {
     setConfig({ ...config, scoring: { ...config.scoring, bonusRules: rules } });
   }
 
   function addRule() {
-    updateRules([...rules, { type: newType, points: newPoints }]);
+    if (!newName.trim()) return;
+    updateRules([...rules, { name: newName.trim(), type: newType, points: newPoints }]);
+    setNewName('');
+    setNewPoints(1);
   }
 
   function removeRule(index: number) {
@@ -263,8 +273,9 @@ function BonusRulesEditor({ config, setConfig }: { config: Config; setConfig: (c
 
   return (
     <div>
-      <label className="block text-sm text-gray-300 mb-1">Reglas de bonificación adicionales</label>
+      <label className="block text-sm text-gray-300 mb-1">Tus propias reglas de bonificación</label>
       <p className="text-xs text-gray-500 mb-3">
+        Crea tus propias reglas: ponle un nombre, elige la condición que debe cumplirse y cuántos puntos extra otorga.
         Estos puntos se suman siempre, además de las reglas de arriba.
       </p>
 
@@ -273,7 +284,9 @@ function BonusRulesEditor({ config, setConfig }: { config: Config; setConfig: (c
           {rules.map((rule, i) => (
             <li key={i} className="flex items-center justify-between bg-gray-800 border border-gray-700 rounded px-3 py-2">
               <span className="text-sm text-gray-200">
-                {bonusRuleLabel(rule.type)} → <span className="text-yellow-400 font-bold">+{rule.points} pts</span>
+                <span className="font-semibold text-white">{rule.name}</span>
+                <span className="text-gray-400"> — {conditionLabel(rule.type)}</span>
+                {' → '}<span className="text-yellow-400 font-bold">+{rule.points} pts</span>
               </span>
               <button onClick={() => removeRule(i)}
                 className="text-gray-500 hover:text-red-400 text-sm px-2">
@@ -284,24 +297,32 @@ function BonusRulesEditor({ config, setConfig }: { config: Config; setConfig: (c
         </ul>
       )}
 
-      <div className="flex flex-wrap items-end gap-3">
+      <div className="space-y-3 bg-gray-800/50 border border-gray-700 rounded-lg p-4">
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Tipo de regla</label>
+          <label className="block text-xs text-gray-400 mb-1">Nombre de tu regla</label>
+          <input type="text" value={newName} placeholder="p. ej. 'Mago de la diferencia'"
+            onChange={e => setNewName(e.target.value)}
+            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Condición — ¿qué debe acertar el usuario?</label>
           <select value={newType} onChange={e => setNewType(e.target.value)}
-            className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500">
-            {BONUS_RULE_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+            className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500">
+            {BONUS_CONDITIONS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
         </div>
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Puntos extra</label>
-          <input type="number" min="0" value={newPoints}
-            onChange={e => setNewPoints(Number(e.target.value))}
-            className="w-24 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
+        <div className="flex items-end gap-3">
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Puntos extra</label>
+            <input type="number" min="0" value={newPoints}
+              onChange={e => setNewPoints(Number(e.target.value))}
+              className="w-24 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
+          </div>
+          <button onClick={addRule} disabled={!newName.trim()}
+            className="px-4 py-2 rounded-lg font-semibold bg-yellow-500 hover:bg-yellow-400 disabled:bg-gray-700 disabled:text-gray-500 text-gray-900 transition-colors">
+            + Crear regla
+          </button>
         </div>
-        <button onClick={addRule}
-          className="px-4 py-2 rounded-lg font-semibold bg-gray-700 hover:bg-gray-600 text-white transition-colors">
-          + Añadir regla
-        </button>
       </div>
     </div>
   );

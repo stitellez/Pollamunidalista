@@ -4,6 +4,21 @@ function getOutcome(home, away) {
   return 'draw';
 }
 
+function bothScored(home, away) {
+  return home > 0 && away > 0;
+}
+
+// Each evaluator receives (prediction, match) and returns true if the bonus condition is met.
+const BONUS_CONDITIONS = {
+  correct_home_goals: (p, m) => p.homeScore === m.homeScore,
+  correct_away_goals: (p, m) => p.awayScore === m.awayScore,
+  correct_goal_difference: (p, m) => (p.homeScore - p.awayScore) === (m.homeScore - m.awayScore),
+  correct_total_goals: (p, m) => (p.homeScore + p.awayScore) === (m.homeScore + m.awayScore),
+  correct_draw: (p, m) =>
+    getOutcome(p.homeScore, p.awayScore) === 'draw' && getOutcome(m.homeScore, m.awayScore) === 'draw',
+  both_teams_scored: (p, m) => bothScored(p.homeScore, p.awayScore) === bothScored(m.homeScore, m.awayScore),
+};
+
 // Returns points for a single prediction against an actual result.
 // config.stacking: 'exclusive' = best rule only | 'additive' = rules stack
 function scorePrediction(prediction, match, config) {
@@ -22,10 +37,8 @@ function scorePrediction(prediction, match, config) {
 
   let bonusPoints = 0;
   for (const rule of bonusRules) {
-    if (rule.type === 'correct_home_goals' && prediction.homeScore === match.homeScore) {
-      bonusPoints += rule.points;
-    }
-    if (rule.type === 'correct_away_goals' && prediction.awayScore === match.awayScore) {
+    const condition = BONUS_CONDITIONS[rule.type];
+    if (condition && condition(prediction, match)) {
       bonusPoints += rule.points;
     }
   }

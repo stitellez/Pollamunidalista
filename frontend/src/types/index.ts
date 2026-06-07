@@ -50,7 +50,7 @@ export interface ScoringConfig {
   exactScore: number;
   correctOutcome: number;
   stacking: 'exclusive' | 'additive';
-  bonusRules: { type: string; points: number }[];
+  bonusRules: { name: string; type: string; points: number }[];
 }
 
 export interface Config {
