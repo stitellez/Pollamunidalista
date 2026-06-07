@@ -6,8 +6,8 @@ const { requireAuth } = require('../middleware/auth');
 const router = express.Router();
 
 // GET /api/standings
-router.get('/', requireAuth, (_req, res) => {
-  const matches = readJSON('matches.json');
+router.get('/', requireAuth, async (_req, res) => {
+  const matches = await readJSON('matches.json');
   res.json(computeStandings(matches));
 });
 

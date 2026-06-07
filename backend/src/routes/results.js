@@ -6,11 +6,11 @@ const { requireAuth } = require('../middleware/auth');
 const router = express.Router();
 
 // GET /api/results — abgeschlossene Spiele mit allen Tipps + Punkten (für alle User)
-router.get('/', requireAuth, (_req, res) => {
-  const users = readJSON('users.json');
-  const matches = readJSON('matches.json');
-  const predictions = readJSON('predictions.json');
-  const config = readJSON('config.json');
+router.get('/', requireAuth, async (_req, res) => {
+  const users = await readJSON('users.json');
+  const matches = await readJSON('matches.json');
+  const predictions = await readJSON('predictions.json');
+  const config = await readJSON('config.json');
 
   const finishedMatches = matches
     .filter(m => m.homeScore !== null && m.awayScore !== null)

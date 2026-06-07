@@ -1,16 +1,16 @@
-const fs = require('fs');
-const path = require('path');
+const { kv } = require('@vercel/kv');
 
-const DATA_DIR = path.join(__dirname, '../../../data');
+// Same key names as the old JSON filenames so call sites stay unchanged —
+// just store/retrieve a whole JSON document per key in Vercel KV (Redis).
+const KEY_PREFIX = 'wmpredictor:';
 
-function readJSON(filename) {
-  const file = path.join(DATA_DIR, filename);
-  return JSON.parse(fs.readFileSync(file, 'utf-8'));
+async function readJSON(filename) {
+  const data = await kv.get(KEY_PREFIX + filename);
+  return data ?? null;
 }
 
-function writeJSON(filename, data) {
-  const file = path.join(DATA_DIR, filename);
-  fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
+async function writeJSON(filename, data) {
+  await kv.set(KEY_PREFIX + filename, data);
 }
 
 module.exports = { readJSON, writeJSON };

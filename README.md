@@ -29,13 +29,27 @@ Als Admin siehst du einen extra Tab "Admin":
 
 Admin → "Teilnehmer" → Name + PIN eingeben → "Hinzufügen"
 
-## Daten-Dateien
+## Daten-Speicherung
 
-Alle Daten liegen in `/data/`:
-- `users.json` — Teilnehmer
-- `matches.json` — Spiele + Ergebnisse
-- `predictions.json` — alle Tipps
-- `config.json` — Punkte-Regeln
+**Lokale Entwicklung & Produktion (Vercel):** Alle Daten (Users, Matches, Predictions, Config) liegen in **Vercel KV** (Redis), nicht mehr in lokalen JSON-Dateien — das war nötig, weil Vercel-Serverless-Functions kein beschreibbares Dateisystem haben.
+
+Die ursprünglichen Seed-Daten liegen weiterhin als Referenz in `/data/`:
+- `users.json` — Teilnehmer (Startzustand: Admin "Santi")
+- `matches.json` — WM-2026-Spielplan
+- `predictions.json` — leer (Startzustand)
+- `config.json` — Punkte-Regeln (Default)
+
+## Deployment auf Vercel (Schritt-für-Schritt)
+
+1. **GitHub-Repo erstellen** und den lokalen Stand pushen (`git remote add origin ...` → `git push -u origin main`)
+2. **Vercel-Projekt anlegen:** [vercel.com](https://vercel.com) → "Add New Project" → das GitHub-Repo auswählen. Vercel erkennt `vercel.json` automatisch (Build der `frontend/`, API-Function unter `/api`)
+3. **KV-Store anlegen:** Im Vercel-Projekt → Tab "Storage" → "Create Database" → "KV" (Upstash Redis) → mit dem Projekt verlinken. Vercel injiziert dann automatisch die Env-Vars `KV_REST_API_URL`, `KV_REST_API_TOKEN` etc.
+4. **JWT_SECRET setzen:** Projekt → Settings → Environment Variables → `JWT_SECRET` mit einem langen zufälligen String anlegen
+5. **Lokale Env-Vars holen:** `vercel env pull backend/.env` (oder die KV-Werte manuell aus dem Storage-Tab in `backend/.env` kopieren — Vorlage siehe `backend/.env.template`)
+6. **Daten einmalig seeden:** `npm --prefix backend run seed` — schreibt die Inhalte aus `/data/*.json` einmalig in den KV-Store
+7. **Deploy auslösen** (passiert automatisch bei Push auf den Hauptbranch, oder manuell über `vercel --prod`)
+
+Danach läuft Frontend + Backend unter derselben Vercel-Domain (`/api/*` wird per Rewrite an die Serverless-Function geroutet — kein CORS-Thema in Produktion).
 
 ## Punkte-System (Standard)
 
