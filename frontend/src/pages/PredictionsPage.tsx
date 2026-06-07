@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Match, Prediction } from '../types';
+import type { Match, Prediction, SpecialPrediction } from '../types';
 import api from '../api/client';
 
 const PHASE_LABELS: Record<string, string> = {
@@ -117,6 +117,111 @@ function MatchCard({ match, myPred, onSave }: {
   );
 }
 
+function SpecialPredictionsCard() {
+  const [teams, setTeams] = useState<string[]>([]);
+  const [prediction, setPrediction] = useState<SpecialPrediction | null>(null);
+  const [locked, setLocked] = useState(false);
+  const [champion, setChampion] = useState('');
+  const [runnerUp, setRunnerUp] = useState('');
+  const [topScorer, setTopScorer] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    Promise.all([
+      api.get('/special/teams').then(r => r.data),
+      api.get('/special/me').then(r => r.data),
+    ]).then(([t, me]) => {
+      setTeams(t);
+      setLocked(me.locked);
+      setPrediction(me.prediction);
+      if (me.prediction) {
+        setChampion(me.prediction.champion || '');
+        setRunnerUp(me.prediction.runnerUp || '');
+        setTopScorer(me.prediction.topScorer || '');
+      }
+    }).finally(() => setLoading(false));
+  }, []);
+
+  async function save() {
+    setSaving(true);
+    try {
+      const { data } = await api.post('/special', { champion, runnerUp, topScorer });
+      setPrediction(data);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) return <div className="text-center text-gray-400 py-10">Cargando...</div>;
+
+  return (
+    <div className="max-w-md bg-gray-900 border border-gray-700 rounded-xl p-5">
+      <h2 className="text-lg font-bold text-white mb-1">🏆 Pronósticos especiales</h2>
+      <p className="text-sm text-gray-400 mb-5">
+        ¿Quién será el campeón, el subcampeón y el máximo goleador del torneo? Solo puedes pronosticar antes de que arranque el primer partido.
+      </p>
+
+      {locked && (
+        <div className="mb-4 text-xs bg-red-900/40 text-red-400 px-3 py-2 rounded-lg">
+          🔒 Cerrado — el torneo ya ha comenzado, ya no se pueden cambiar estos pronósticos.
+        </div>
+      )}
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm text-gray-300 mb-1">🥇 Campeón del mundo</label>
+          {locked ? (
+            <p className="text-white font-semibold">{prediction?.champion || '— sin pronóstico —'}</p>
+          ) : (
+            <select value={champion} onChange={e => setChampion(e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500">
+              <option value="">— Selecciona un equipo —</option>
+              {teams.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-300 mb-1">🥈 Subcampeón</label>
+          {locked ? (
+            <p className="text-white font-semibold">{prediction?.runnerUp || '— sin pronóstico —'}</p>
+          ) : (
+            <select value={runnerUp} onChange={e => setRunnerUp(e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500">
+              <option value="">— Selecciona un equipo —</option>
+              {teams.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-300 mb-1">⚽ Máximo goleador</label>
+          {locked ? (
+            <p className="text-white font-semibold">{prediction?.topScorer || '— sin pronóstico —'}</p>
+          ) : (
+            <input type="text" value={topScorer} onChange={e => setTopScorer(e.target.value)}
+              placeholder="Nombre del jugador"
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
+          )}
+        </div>
+      </div>
+
+      {!locked && (
+        <button onClick={save} disabled={saving}
+          className={`mt-5 px-6 py-2 rounded-lg font-bold transition-colors ${
+            saved ? 'bg-green-600 text-white' : 'bg-yellow-500 hover:bg-yellow-400 text-gray-900 disabled:opacity-50'
+          }`}>
+          {saved ? '✓ Guardado' : saving ? 'Guardando...' : 'Guardar pronósticos'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function PredictionsPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [myPreds, setMyPreds] = useState<Prediction[]>([]);
@@ -178,9 +283,21 @@ export default function PredictionsPage() {
             {PHASE_LABELS[phase]}
           </button>
         ))}
+        <button
+          onClick={() => setActivePhase('special')}
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            activePhase === 'special'
+              ? 'bg-yellow-500 text-gray-900'
+              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+          }`}
+        >
+          🏆 Especiales
+        </button>
       </div>
 
-      {groupedByGroup ? (
+      {activePhase === 'special' ? (
+        <SpecialPredictionsCard />
+      ) : groupedByGroup ? (
         Object.entries(groupedByGroup).sort(([a], [b]) => a.localeCompare(b)).map(([group, gMatches]) => (
           <div key={group} className="mb-8">
             <h2 className="text-yellow-400 font-semibold mb-3 text-sm uppercase tracking-wider">

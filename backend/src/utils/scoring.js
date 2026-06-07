@@ -57,4 +57,26 @@ function scorePrediction(prediction, match, config) {
   return 0;
 }
 
-module.exports = { scorePrediction, getOutcome };
+function normalizeName(value) {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+// Returns points for a tournament-wide "special" prediction (champion / runner-up / top scorer).
+function scoreSpecialPrediction(prediction, config) {
+  if (!prediction) return 0;
+  const { championPoints, runnerUpPoints, topScorerPoints, results } = config.special;
+
+  let total = 0;
+  if (results.champion && normalizeName(prediction.champion) === normalizeName(results.champion)) {
+    total += championPoints;
+  }
+  if (results.runnerUp && normalizeName(prediction.runnerUp) === normalizeName(results.runnerUp)) {
+    total += runnerUpPoints;
+  }
+  if (results.topScorer && normalizeName(prediction.topScorer) === normalizeName(results.topScorer)) {
+    total += topScorerPoints;
+  }
+  return total;
+}
+
+module.exports = { scorePrediction, scoreSpecialPrediction, getOutcome };

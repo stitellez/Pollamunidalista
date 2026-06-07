@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import type { Match, Config } from '../types';
 import api from '../api/client';
 
-type Tab = 'results' | 'knockout' | 'scoring' | 'predictions' | 'users';
+type Tab = 'results' | 'knockout' | 'scoring' | 'special' | 'predictions' | 'users';
 
 function ResultsTab({ matches }: { matches: Match[] }) {
   const [saving, setSaving] = useState<string | null>(null);
@@ -328,6 +328,113 @@ function BonusRulesEditor({ config, setConfig }: { config: Config; setConfig: (c
   );
 }
 
+function SpecialTab() {
+  const [config, setConfig] = useState<Config | null>(null);
+  const [teams, setTeams] = useState<string[]>([]);
+  const [champion, setChampion] = useState('');
+  const [runnerUp, setRunnerUp] = useState('');
+  const [topScorer, setTopScorer] = useState('');
+  const [savedPoints, setSavedPoints] = useState(false);
+  const [savedResults, setSavedResults] = useState(false);
+
+  useEffect(() => {
+    Promise.all([
+      api.get('/admin/config').then(r => r.data),
+      api.get('/special/teams').then(r => r.data),
+    ]).then(([c, t]) => {
+      setConfig(c);
+      setTeams(t);
+      setChampion(c.special.results.champion || '');
+      setRunnerUp(c.special.results.runnerUp || '');
+      setTopScorer(c.special.results.topScorer || '');
+    });
+  }, []);
+
+  async function savePoints() {
+    if (!config) return;
+    await api.put('/admin/config', { special: { ...config.special, results: undefined } });
+    setSavedPoints(true);
+    setTimeout(() => setSavedPoints(false), 2000);
+  }
+
+  async function saveResults() {
+    await api.put('/admin/special-results', { champion, runnerUp, topScorer });
+    setSavedResults(true);
+    setTimeout(() => setSavedResults(false), 2000);
+  }
+
+  if (!config) return <div className="text-gray-400">Cargando...</div>;
+  const sp = config.special;
+
+  return (
+    <div className="max-w-md space-y-10">
+      <div>
+        <h3 className="text-sm font-semibold text-gray-300 mb-1">Puntos por pronóstico especial acertado</h3>
+        <p className="text-xs text-gray-500 mb-4">Cuántos puntos otorga cada pronóstico especial si acierta.</p>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-300 mb-1">🥇 Campeón correcto</label>
+            <input type="number" min="0" value={sp.championPoints}
+              onChange={e => setConfig({ ...config, special: { ...sp, championPoints: Number(e.target.value) } })}
+              className="w-24 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-300 mb-1">🥈 Subcampeón correcto</label>
+            <input type="number" min="0" value={sp.runnerUpPoints}
+              onChange={e => setConfig({ ...config, special: { ...sp, runnerUpPoints: Number(e.target.value) } })}
+              className="w-24 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-300 mb-1">⚽ Máximo goleador correcto</label>
+            <input type="number" min="0" value={sp.topScorerPoints}
+              onChange={e => setConfig({ ...config, special: { ...sp, topScorerPoints: Number(e.target.value) } })}
+              className="w-24 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
+          </div>
+        </div>
+        <button onClick={savePoints}
+          className={`mt-4 px-6 py-2 rounded-lg font-bold transition-colors ${savedPoints ? 'bg-green-600 text-white' : 'bg-yellow-500 hover:bg-yellow-400 text-gray-900'}`}>
+          {savedPoints ? '✓ Guardado' : 'Guardar puntos'}
+        </button>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-semibold text-gray-300 mb-1">Resultados finales del torneo</h3>
+        <p className="text-xs text-gray-500 mb-4">
+          Cuando se sepa quién es el campeón, subcampeón y máximo goleador, introdúcelo aquí — la clasificación se recalcula automáticamente.
+        </p>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-300 mb-1">🥇 Campeón del mundo</label>
+            <select value={champion} onChange={e => setChampion(e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500">
+              <option value="">— Sin definir —</option>
+              {teams.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-300 mb-1">🥈 Subcampeón</label>
+            <select value={runnerUp} onChange={e => setRunnerUp(e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500">
+              <option value="">— Sin definir —</option>
+              {teams.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-300 mb-1">⚽ Máximo goleador</label>
+            <input type="text" value={topScorer} onChange={e => setTopScorer(e.target.value)}
+              placeholder="Nombre del jugador"
+              className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
+          </div>
+        </div>
+        <button onClick={saveResults}
+          className={`mt-4 px-6 py-2 rounded-lg font-bold transition-colors ${savedResults ? 'bg-green-600 text-white' : 'bg-yellow-500 hover:bg-yellow-400 text-gray-900'}`}>
+          {savedResults ? '✓ Guardado' : 'Guardar resultados'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function PredictionsViewTab({ matches }: { matches: Match[] }) {
   const [selectedMatch, setSelectedMatch] = useState('');
   const [preds, setPreds] = useState<{ userId: string; name: string; homeScore: number | null; awayScore: number | null; points: number | null }[]>([]);
@@ -496,6 +603,7 @@ export default function AdminPage() {
     { key: 'results', label: '📋 Resultados' },
     { key: 'knockout', label: '🏆 Eliminatorias' },
     { key: 'scoring', label: '⚙️ Reglas de puntos' },
+    { key: 'special', label: '🏆 Especiales' },
     { key: 'predictions', label: '👁 Ver pronósticos' },
     { key: 'users', label: '👥 Participantes' },
   ];
@@ -520,6 +628,7 @@ export default function AdminPage() {
       {tab === 'results' && <ResultsTab matches={matches} />}
       {tab === 'knockout' && <KnockoutTab matches={matches} onUpdate={loadMatches} />}
       {tab === 'scoring' && <ScoringTab />}
+      {tab === 'special' && <SpecialTab />}
       {tab === 'predictions' && <PredictionsViewTab matches={matches} />}
       {tab === 'users' && <UsersTab />}
     </div>

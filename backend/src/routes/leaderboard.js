@@ -1,6 +1,6 @@
 const express = require('express');
 const { readJSON } = require('../utils/fileStore');
-const { scorePrediction } = require('../utils/scoring');
+const { scorePrediction, scoreSpecialPrediction } = require('../utils/scoring');
 const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -10,6 +10,7 @@ router.get('/', requireAuth, async (_req, res) => {
   const users = await readJSON('users.json');
   const matches = await readJSON('matches.json');
   const predictions = await readJSON('predictions.json');
+  const specialPredictions = await readJSON('specialPredictions.json');
   const config = await readJSON('config.json');
 
   const finishedMatches = matches.filter(
@@ -30,11 +31,16 @@ router.get('/', requireAuth, async (_req, res) => {
       }
     }
 
+    const specialPred = specialPredictions.find(p => p.userId === user.id);
+    const specialPoints = scoreSpecialPrediction(specialPred, config);
+    totalPoints += specialPoints;
+
     return {
       userId: user.id,
       name: user.name,
       totalPoints,
       predictedCount: userPreds.length,
+      specialPoints,
       breakdown,
     };
   });

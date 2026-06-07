@@ -31,7 +31,29 @@ export interface LeaderboardEntry {
   name: string;
   totalPoints: number;
   predictedCount: number;
+  specialPoints: number;
   breakdown: { matchId: string; points: number; homeScore: number; awayScore: number }[];
+}
+
+export interface SpecialPrediction {
+  userId: string;
+  champion: string | null;
+  runnerUp: string | null;
+  topScorer: string | null;
+  submittedAt: string;
+}
+
+export interface SpecialResults {
+  champion: string | null;
+  runnerUp: string | null;
+  topScorer: string | null;
+}
+
+export interface SpecialConfig {
+  championPoints: number;
+  runnerUpPoints: number;
+  topScorerPoints: number;
+  results: SpecialResults;
 }
 
 export interface StandingRow {
@@ -55,6 +77,7 @@ export interface ScoringConfig {
 
 export interface Config {
   scoring: ScoringConfig;
+  special: SpecialConfig;
 }
 
 export interface ResultPrediction {

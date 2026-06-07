@@ -5,5 +5,15 @@
     "stacking": "exclusive",
     "bonusRules": []
   },
+  "special": {
+    "championPoints": 10,
+    "runnerUpPoints": 6,
+    "topScorerPoints": 6,
+    "results": {
+      "champion": null,
+      "runnerUp": null,
+      "topScorer": null
+    }
+  },
   "scoringNote": "stacking: 'exclusive' = bestes Ergebnis zaehlt | 'additive' = Punkte werden addiert"
 }

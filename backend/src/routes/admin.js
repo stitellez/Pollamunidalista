@@ -47,13 +47,34 @@ router.get('/config', async (_req, res) => {
 
 // PUT /api/admin/config — Scoring-Regeln speichern
 router.put('/config', async (req, res) => {
-  const { scoring } = req.body;
-  if (!scoring) return res.status(400).json({ error: 'scoring object erforderlich' });
+  const { scoring, special } = req.body;
+  if (!scoring && !special) return res.status(400).json({ error: 'scoring oder special object erforderlich' });
 
   const config = await readJSON('config.json');
-  config.scoring = { ...config.scoring, ...scoring };
+  if (scoring) config.scoring = { ...config.scoring, ...scoring };
+  if (special) {
+    config.special = {
+      ...config.special,
+      ...special,
+      results: special.results ? { ...config.special.results, ...special.results } : config.special.results,
+    };
+  }
   await writeJSON('config.json', config);
   res.json(config);
+});
+
+// PUT /api/admin/special-results — Meister, Vizemeister, Torschützenkönig eintragen
+router.put('/special-results', async (req, res) => {
+  const { champion, runnerUp, topScorer } = req.body;
+
+  const config = await readJSON('config.json');
+  config.special.results = {
+    champion: champion || null,
+    runnerUp: runnerUp || null,
+    topScorer: topScorer || null,
+  };
+  await writeJSON('config.json', config);
+  res.json(config.special);
 });
 
 // GET /api/admin/matches/:id/predictions — alle User-Predictions für ein Spiel

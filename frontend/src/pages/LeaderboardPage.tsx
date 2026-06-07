@@ -52,6 +52,11 @@ export default function LeaderboardPage() {
                       <span className={`font-bold text-lg ${entry.totalPoints > 0 ? 'text-yellow-400' : 'text-gray-500'}`}>
                         {entry.totalPoints}
                       </span>
+                      {entry.specialPoints > 0 && (
+                        <div className="text-xs text-gray-500">
+                          incl. <span className="text-yellow-500/80">+{entry.specialPoints}</span> 🏆 especiales
+                        </div>
+                      )}
                     </td>
                   </tr>
                 );

@@ -12,7 +12,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 const { writeJSON } = require('../src/utils/fileStore');
 
 const DATA_DIR = path.join(__dirname, '../../data');
-const FILES = ['users.json', 'matches.json', 'predictions.json', 'config.json'];
+const FILES = ['users.json', 'matches.json', 'predictions.json', 'specialPredictions.json', 'config.json'];
 
 async function seed() {
   for (const filename of FILES) {
