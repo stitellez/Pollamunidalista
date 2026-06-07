@@ -6,6 +6,7 @@ import PredictionsPage from './pages/PredictionsPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import GroupsPage from './pages/GroupsPage';
 import ResultsPage from './pages/ResultsPage';
+import RulesPage from './pages/RulesPage';
 import AdminPage from './pages/AdminPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -35,6 +36,9 @@ function AppRoutes() {
       } />
       <Route path="/results" element={
         <ProtectedRoute><Layout><ResultsPage /></Layout></ProtectedRoute>
+      } />
+      <Route path="/rules" element={
+        <ProtectedRoute><Layout><RulesPage /></Layout></ProtectedRoute>
       } />
       <Route path="/admin" element={
         <AdminRoute><Layout><AdminPage /></Layout></AdminRoute>

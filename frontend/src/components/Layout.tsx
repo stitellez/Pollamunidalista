@@ -30,6 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <NavLink to="/leaderboard" className={navClass}>Clasificación</NavLink>
             <NavLink to="/groups" className={navClass}>Grupos</NavLink>
             <NavLink to="/results" className={navClass}>Resultados</NavLink>
+            <NavLink to="/rules" className={navClass}>Reglas</NavLink>
             {user?.role === 'admin' && (
               <NavLink to="/admin" className={navClass}>Admin</NavLink>
             )}
