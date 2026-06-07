@@ -445,7 +445,8 @@ function PhasesTab({ matches }: { matches: Match[] }) {
     <div className="max-w-md">
       <p className="text-gray-400 text-sm mb-4">
         Por defecto solo está abierta la fase de grupos. Abre las siguientes fases manualmente cuando quieras
-        que los participantes puedan pronosticar — cada partido también se cierra automáticamente al empezar.
+        que los participantes puedan pronosticar — el plazo de cada fase se cierra automáticamente 1 hora antes
+        del saque inicial de su primer partido (para todos sus partidos a la vez).
       </p>
       <div className="space-y-2">
         {PHASE_ORDER.map(phase => {
@@ -454,12 +455,16 @@ function PhasesTab({ matches }: { matches: Match[] }) {
           const firstKickoff = phaseMatches.length
             ? phaseMatches.reduce((min, m) => (new Date(m.kickoff) < new Date(min.kickoff) ? m : min)).kickoff
             : null;
+          const deadline = firstKickoff ? new Date(new Date(firstKickoff).getTime() - 60 * 60 * 1000) : null;
           return (
             <div key={phase} className="flex items-center justify-between bg-gray-800 border border-gray-700 rounded-lg px-4 py-3">
               <div>
                 <div className="text-sm font-medium text-white">{PHASE_LABELS[phase]}</div>
                 {firstKickoff && (
                   <div className="text-xs text-gray-500 mt-0.5">Primer partido: {formatDeadline(firstKickoff)}</div>
+                )}
+                {deadline && (
+                  <div className="text-xs text-gray-500 mt-0.5">Cierre de pronósticos (−1h): {formatDeadline(deadline.toISOString())}</div>
                 )}
               </div>
               <button

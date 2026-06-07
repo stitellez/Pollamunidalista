@@ -88,7 +88,7 @@ export default function RulesPage() {
       <Section title="⏰ Plazos para pronosticar">
         <ul className="text-sm text-gray-400 space-y-2 list-disc list-inside">
           <li>Por ahora solo está abierta la <span className="text-gray-200 font-medium">fase de grupos</span> — el resto de fases las irá abriendo el administrador a medida que avance el torneo.</li>
-          <li>Cada partido se cierra automáticamente en cuanto comienza — ya no se puede cambiar el pronóstico.</li>
+          <li>El plazo para pronosticar una fase se cierra <span className="text-gray-200 font-medium">1 hora antes del saque inicial de su primer partido</span> — y en ese momento se cierra <span className="text-gray-200 font-medium">toda la fase a la vez</span> (todos sus partidos, no solo el primero).</li>
           <li>Los pronósticos especiales (campeón, subcampeón, goleador) se cierran en el saque inicial del primer partido del torneo.</li>
         </ul>
       </Section>

@@ -224,7 +224,6 @@ function SpecialPredictionsCard() {
 
 function PhaseDeadlineBanner({ matches }: { matches: Match[] }) {
   const phaseUnlocked = matches.every(m => m.phaseUnlocked);
-  const playable = matches.filter(m => m.homeTeam !== 'TBD' && !m.locked);
 
   if (!phaseUnlocked) {
     return (
@@ -234,14 +233,24 @@ function PhaseDeadlineBanner({ matches }: { matches: Match[] }) {
     );
   }
 
-  if (playable.length === 0) return null;
+  if (matches.length === 0) return null;
 
-  const earliest = playable.reduce((min, m) => (new Date(m.kickoff) < new Date(min.kickoff) ? m : min));
+  // El plazo de la fase entera vence 1 hora antes del saque inicial de su primer partido
+  const earliest = matches.reduce((min, m) => (new Date(m.kickoff) < new Date(min.kickoff) ? m : min));
+  const deadline = new Date(new Date(earliest.kickoff).getTime() - 60 * 60 * 1000);
+
+  if (Date.now() >= deadline.getTime()) {
+    return (
+      <div className="mb-4 text-sm bg-red-900/30 text-red-300 border border-red-900/50 px-4 py-3 rounded-lg">
+        🔒 El plazo para pronosticar esta fase ya ha terminado — todos sus partidos están cerrados.
+      </div>
+    );
+  }
 
   return (
     <div className="mb-4 text-sm bg-yellow-900/20 text-yellow-300 border border-yellow-900/40 px-4 py-3 rounded-lg">
-      ⏰ Plazo para pronosticar esta fase: hasta el saque inicial de cada partido — el primero empieza el{' '}
-      <span className="font-semibold">{formatKickoff(earliest.kickoff)}</span>.
+      ⏰ Puedes pronosticar esta fase hasta <span className="font-semibold">1 hora antes</span> del saque inicial de su
+      primer partido — el plazo termina el <span className="font-semibold">{formatKickoff(deadline.toISOString())}</span>.
     </div>
   );
 }

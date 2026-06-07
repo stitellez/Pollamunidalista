@@ -1,6 +1,7 @@
 const express = require('express');
 const { readJSON, writeJSON } = require('../utils/fileStore');
 const { requireAuth } = require('../middleware/auth');
+const { getPhaseDeadline } = require('../utils/phaseDeadlines');
 
 const router = express.Router();
 
@@ -24,9 +25,11 @@ router.post('/', requireAuth, async (req, res) => {
   const match = matches.find(m => m.id === matchId);
   if (!match) return res.status(404).json({ error: 'Spiel nicht gefunden' });
 
-  // Server-side lock enforcement — Anpfiff-Zeit UND Admin-Phasenfreigabe
-  if (Date.now() >= new Date(match.kickoff).getTime()) {
-    return res.status(403).json({ error: 'Tipp gesperrt — Spiel hat bereits begonnen' });
+  // Server-side lock enforcement — Tipp-Frist der ganzen Phase UND Admin-Phasenfreigabe.
+  // Frist = 1 Stunde vor Anpfiff des ERSTEN Spiels der Phase, gilt für alle ihre Spiele gemeinsam.
+  const deadline = getPhaseDeadline(matches, match.phase);
+  if (deadline !== null && Date.now() >= deadline) {
+    return res.status(403).json({ error: 'Tipp gesperrt — die Frist für diese Phase ist abgelaufen (1 Stunde vor dem ersten Spiel der Phase)' });
   }
   const config = await readJSON('config.json');
   const phaseUnlocks = config.phaseUnlocks || {};
