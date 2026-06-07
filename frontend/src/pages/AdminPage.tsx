@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Match, Config, Phase } from '../types';
 import api from '../api/client';
+import { teamLabel } from '../utils/flags';
 
 type Tab = 'results' | 'knockout' | 'phases' | 'scoring' | 'special' | 'predictions' | 'users';
 
@@ -69,7 +70,7 @@ function ResultsTab({ matches, onUpdate }: { matches: Match[]; onUpdate: () => v
               const locked = match.resultLocked;
               return (
                 <div key={match.id} className="flex items-center gap-3 bg-gray-800 rounded-lg px-4 py-2.5">
-                  <span className="flex-1 text-right text-sm text-white">{match.homeTeam}</span>
+                  <span className="flex-1 text-right text-sm text-white">{teamLabel(match.homeTeam)}</span>
                   <input
                     type="number" min="0" max="20" value={s.home} disabled={locked}
                     onChange={e => setLocalScores(prev => ({ ...prev, [match.id]: { ...getScore(match), home: e.target.value } }))}
@@ -81,7 +82,7 @@ function ResultsTab({ matches, onUpdate }: { matches: Match[]; onUpdate: () => v
                     onChange={e => setLocalScores(prev => ({ ...prev, [match.id]: { ...getScore(match), away: e.target.value } }))}
                     className="w-10 text-center bg-gray-700 border border-gray-600 rounded py-1 text-white text-sm focus:outline-none focus:border-yellow-500 disabled:opacity-50"
                   />
-                  <span className="flex-1 text-sm text-white">{match.awayTeam}</span>
+                  <span className="flex-1 text-sm text-white">{teamLabel(match.awayTeam)}</span>
                   <button
                     onClick={() => saveResult(match)}
                     disabled={saving === match.id || locked}
@@ -566,7 +567,7 @@ function SpecialTab() {
             <select value={champion} onChange={e => setChampion(e.target.value)}
               className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500">
               <option value="">— Sin definir —</option>
-              {teams.map(t => <option key={t} value={t}>{t}</option>)}
+              {teams.map(t => <option key={t} value={t}>{teamLabel(t)}</option>)}
             </select>
           </div>
           <div>
@@ -574,7 +575,7 @@ function SpecialTab() {
             <select value={runnerUp} onChange={e => setRunnerUp(e.target.value)}
               className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500">
               <option value="">— Sin definir —</option>
-              {teams.map(t => <option key={t} value={t}>{t}</option>)}
+              {teams.map(t => <option key={t} value={t}>{teamLabel(t)}</option>)}
             </select>
           </div>
           <div>
@@ -616,7 +617,7 @@ function PredictionsViewTab({ matches }: { matches: Match[] }) {
           <option value="">-- Elige un partido --</option>
           {finishedOrLocked.map(m => (
             <option key={m.id} value={m.id}>
-              {m.homeTeam} vs {m.awayTeam} {m.homeScore !== null ? `(${m.homeScore}:${m.awayScore})` : ''}
+              {teamLabel(m.homeTeam)} vs {teamLabel(m.awayTeam)} {m.homeScore !== null ? `(${m.homeScore}:${m.awayScore})` : ''}
             </option>
           ))}
         </select>
@@ -626,7 +627,7 @@ function PredictionsViewTab({ matches }: { matches: Match[] }) {
         <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
           {selMatch && (
             <div className="px-4 py-3 border-b border-gray-800 bg-gray-800/50">
-              <span className="font-semibold text-white">{selMatch.homeTeam} vs {selMatch.awayTeam}</span>
+              <span className="font-semibold text-white">{teamLabel(selMatch.homeTeam)} vs {teamLabel(selMatch.awayTeam)}</span>
               {selMatch.homeScore !== null && (
                 <span className="ml-3 text-yellow-400">Resultado: {selMatch.homeScore}:{selMatch.awayScore}</span>
               )}

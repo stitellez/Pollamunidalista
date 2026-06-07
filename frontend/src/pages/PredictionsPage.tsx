@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Match, Prediction, SpecialPrediction } from '../types';
 import api from '../api/client';
+import { teamLabel } from '../utils/flags';
 
 const PHASE_LABELS: Record<string, string> = {
   group: 'Fase de grupos',
@@ -59,7 +60,7 @@ function MatchCard({ match, myPred, onSave }: {
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="flex-1 text-right font-semibold text-white">{match.homeTeam}</span>
+        <span className="flex-1 text-right font-semibold text-white">{teamLabel(match.homeTeam)}</span>
 
         {match.locked || isTBD ? (
           <div className="flex items-center gap-2 text-center min-w-[80px] justify-center">
@@ -89,7 +90,7 @@ function MatchCard({ match, myPred, onSave }: {
           </div>
         )}
 
-        <span className="flex-1 font-semibold text-white">{match.awayTeam}</span>
+        <span className="flex-1 font-semibold text-white">{teamLabel(match.awayTeam)}</span>
       </div>
 
       {!match.locked && !isTBD && (
@@ -175,12 +176,12 @@ function SpecialPredictionsCard() {
         <div>
           <label className="block text-sm text-gray-300 mb-1">🥇 Campeón del mundo</label>
           {locked ? (
-            <p className="text-white font-semibold">{prediction?.champion || '— sin pronóstico —'}</p>
+            <p className="text-white font-semibold">{prediction?.champion ? teamLabel(prediction.champion) : '— sin pronóstico —'}</p>
           ) : (
             <select value={champion} onChange={e => setChampion(e.target.value)}
               className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500">
               <option value="">— Selecciona un equipo —</option>
-              {teams.map(t => <option key={t} value={t}>{t}</option>)}
+              {teams.map(t => <option key={t} value={t}>{teamLabel(t)}</option>)}
             </select>
           )}
         </div>
@@ -188,12 +189,12 @@ function SpecialPredictionsCard() {
         <div>
           <label className="block text-sm text-gray-300 mb-1">🥈 Subcampeón</label>
           {locked ? (
-            <p className="text-white font-semibold">{prediction?.runnerUp || '— sin pronóstico —'}</p>
+            <p className="text-white font-semibold">{prediction?.runnerUp ? teamLabel(prediction.runnerUp) : '— sin pronóstico —'}</p>
           ) : (
             <select value={runnerUp} onChange={e => setRunnerUp(e.target.value)}
               className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500">
               <option value="">— Selecciona un equipo —</option>
-              {teams.map(t => <option key={t} value={t}>{t}</option>)}
+              {teams.map(t => <option key={t} value={t}>{teamLabel(t)}</option>)}
             </select>
           )}
         </div>

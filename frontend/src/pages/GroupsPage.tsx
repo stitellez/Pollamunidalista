@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { StandingRow } from '../types';
 import api from '../api/client';
+import { teamLabel } from '../utils/flags';
 
 export default function GroupsPage() {
   const [standings, setStandings] = useState<Record<string, StandingRow[]>>({});
@@ -51,7 +52,7 @@ export default function GroupsPage() {
                           {idx < 2 && <div className="w-1 h-4 bg-green-500 rounded-full" />}
                           {idx === 2 && <div className="w-1 h-4 bg-yellow-500/60 rounded-full" />}
                           {idx === 3 && <div className="w-1 h-4 bg-transparent rounded-full" />}
-                          <span className="font-medium">{row.team}</span>
+                          <span className="font-medium">{teamLabel(row.team)}</span>
                         </div>
                       </td>
                       <td className="px-2 py-2 text-center">{row.played}</td>

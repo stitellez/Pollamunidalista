@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { MatchResult } from '../types';
 import api from '../api/client';
+import { teamLabel } from '../utils/flags';
 
 const PHASE_LABELS: Record<string, string> = {
   group: 'Fase de grupos',
@@ -38,7 +39,7 @@ function MatchResultCard({ result }: { result: MatchResult }) {
             {result.label && ` · ${result.label}`}
           </div>
           <div className="font-semibold text-white">
-            {result.homeTeam} <span className="text-yellow-400">{result.homeScore} : {result.awayScore}</span> {result.awayTeam}
+            {teamLabel(result.homeTeam)} <span className="text-yellow-400">{result.homeScore} : {result.awayScore}</span> {teamLabel(result.awayTeam)}
           </div>
         </div>
       </div>
