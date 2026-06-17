@@ -223,35 +223,34 @@ function SpecialPredictionsCard() {
   );
 }
 
-function PhaseDeadlineBanner({ matches }: { matches: Match[] }) {
+function PhaseDeadlineBanner({ matches, label }: { matches: Match[]; label?: string }) {
   const phaseUnlocked = matches.every(m => m.phaseUnlocked);
 
   if (!phaseUnlocked) {
     return (
       <div className="mb-4 text-sm bg-red-900/30 text-red-300 border border-red-900/50 px-4 py-3 rounded-lg">
-        🔒 Esta fase todavía no está abierta para pronósticos — el administrador la abrirá cuando corresponda.
+        🔒 {label ? `${label}: todavía` : 'Esta fase todavía'} no está abierta para pronósticos — el administrador la abrirá cuando corresponda.
       </div>
     );
   }
 
   if (matches.length === 0) return null;
 
-  // El plazo de la fase entera vence 1 hora antes del saque inicial de su primer partido
   const earliest = matches.reduce((min, m) => (new Date(m.kickoff) < new Date(min.kickoff) ? m : min));
   const deadline = new Date(new Date(earliest.kickoff).getTime() - 60 * 60 * 1000);
 
   if (Date.now() >= deadline.getTime()) {
     return (
       <div className="mb-4 text-sm bg-red-900/30 text-red-300 border border-red-900/50 px-4 py-3 rounded-lg">
-        🔒 El plazo para pronosticar esta fase ya ha terminado — todos sus partidos están cerrados.
+        🔒 {label ? `${label}: el` : 'El'} plazo para pronosticar ya ha terminado — los partidos de esta jornada están cerrados.
       </div>
     );
   }
 
   return (
     <div className="mb-4 text-sm bg-yellow-900/20 text-yellow-300 border border-yellow-900/40 px-4 py-3 rounded-lg">
-      ⏰ Puedes pronosticar esta fase hasta <span className="font-semibold">1 hora antes</span> del saque inicial de su
-      primer partido — el plazo termina el <span className="font-semibold">{formatKickoff(deadline.toISOString())}</span>.
+      ⏰ {label ? `${label}: puedes` : 'Puedes'} pronosticar hasta <span className="font-semibold">1 hora antes</span> del primer partido —
+      el plazo termina el <span className="font-semibold">{formatKickoff(deadline.toISOString())}</span>.
     </div>
   );
 }
@@ -288,14 +287,20 @@ export default function PredictionsPage() {
   const phases = PHASE_ORDER.filter(p => matches.some(m => m.phase === p));
   const visibleMatches = matches.filter(m => m.phase === activePhase);
 
-  const groupedByGroup = activePhase === 'group'
-    ? visibleMatches.reduce((acc, m) => {
-        const g = m.group!;
-        if (!acc[g]) acc[g] = [];
-        acc[g].push(m);
-        return acc;
-      }, {} as Record<string, Match[]>)
+  // Gruppenphase: nach Spieltag (1/2/3) aufteilen, dann pro Spieltag nach Gruppe
+  const groupRoundSections = activePhase === 'group'
+    ? [1, 2, 3].map(round => {
+        const roundMatches = visibleMatches.filter(m => m.groupRound === round);
+        const byGroup = roundMatches.reduce((acc, m) => {
+          const g = m.group!;
+          if (!acc[g]) acc[g] = [];
+          acc[g].push(m);
+          return acc;
+        }, {} as Record<string, Match[]>);
+        return { round, matches: roundMatches, byGroup };
+      }).filter(s => s.matches.length > 0)
     : null;
+
 
   if (loading) return <div className="text-center text-gray-400 py-20">Cargando partidos...</div>;
 
@@ -329,28 +334,34 @@ export default function PredictionsPage() {
         </button>
       </div>
 
-      {activePhase !== 'special' && visibleMatches.length > 0 && (
+      {activePhase !== 'special' && activePhase !== 'group' && visibleMatches.length > 0 && (
         <PhaseDeadlineBanner matches={visibleMatches} />
       )}
 
       {activePhase === 'special' ? (
         <SpecialPredictionsCard />
-      ) : groupedByGroup ? (
-        Object.entries(groupedByGroup).sort(([a], [b]) => a.localeCompare(b)).map(([group, gMatches]) => (
-          <div key={group} className="mb-8">
-            <h2 className="text-yellow-400 font-semibold mb-3 text-sm uppercase tracking-wider">
-              Grupo {group}
-            </h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {gMatches.map(match => (
-                <MatchCard
-                  key={match.id}
-                  match={match}
-                  myPred={myPreds.find(p => p.matchId === match.id) || null}
-                  onSave={savePrediction}
-                />
-              ))}
-            </div>
+      ) : groupRoundSections ? (
+        groupRoundSections.map(({ round, matches: roundMatches, byGroup }) => (
+          <div key={round} className="mb-10">
+            <h2 className="text-white font-bold text-base mb-3">Jornada {round}</h2>
+            <PhaseDeadlineBanner matches={roundMatches} label={`Jornada ${round}`} />
+            {Object.entries(byGroup).sort(([a], [b]) => a.localeCompare(b)).map(([group, gMatches]) => (
+              <div key={group} className="mb-8">
+                <h3 className="text-yellow-400 font-semibold mb-3 text-sm uppercase tracking-wider">
+                  Grupo {group}
+                </h3>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {gMatches.map(match => (
+                    <MatchCard
+                      key={match.id}
+                      match={match}
+                      myPred={myPreds.find(p => p.matchId === match.id) || null}
+                      onSave={savePrediction}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         ))
       ) : (

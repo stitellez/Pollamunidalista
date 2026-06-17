@@ -10,6 +10,7 @@ export interface Match {
   id: string;
   phase: Phase;
   group: string | null;
+  groupRound?: number;
   homeTeam: string;
   awayTeam: string;
   kickoff: string;
