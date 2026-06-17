@@ -420,6 +420,26 @@ function formatDeadline(iso: string) {
   });
 }
 
+function computeGroupRoundDeadlines(matches: Match[]): Record<number, Date | null> {
+  const groupMatches = matches.filter(m => m.phase === 'group');
+  const groups = [...new Set(groupMatches.map(m => m.group!))];
+  const roundMap: Record<string, number> = {};
+  for (const group of groups) {
+    const sorted = groupMatches
+      .filter(m => m.group === group)
+      .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+    sorted.forEach((m, i) => { roundMap[m.id] = Math.floor(i / 2) + 1; });
+  }
+  const result: Record<number, Date | null> = {};
+  for (let r = 1; r <= 3; r++) {
+    const rm = groupMatches.filter(m => roundMap[m.id] === r);
+    if (!rm.length) { result[r] = null; continue; }
+    const earliest = rm.reduce((min, m) => new Date(m.kickoff) < new Date(min.kickoff) ? m : min);
+    result[r] = new Date(new Date(earliest.kickoff).getTime() - 60 * 60 * 1000);
+  }
+  return result;
+}
+
 function PhasesTab({ matches }: { matches: Match[] }) {
   const [config, setConfig] = useState<Config | null>(null);
   const [saving, setSaving] = useState<Phase | null>(null);
@@ -442,17 +462,63 @@ function PhasesTab({ matches }: { matches: Match[] }) {
 
   if (!config) return <div className="text-gray-400">Cargando...</div>;
 
+  const groupRoundDeadlines = computeGroupRoundDeadlines(matches);
+
   return (
     <div className="max-w-md">
       <p className="text-gray-400 text-sm mb-4">
         Por defecto solo está abierta la fase de grupos. Abre las siguientes fases manualmente cuando quieras
-        que los participantes puedan pronosticar — el plazo de cada fase se cierra automáticamente 1 hora antes
-        del saque inicial de su primer partido (para todos sus partidos a la vez).
+        que los participantes puedan pronosticar. La fase de grupos tiene 3 jornadas con plazos independientes —
+        cada jornada se cierra automáticamente 1 hora antes de su primer partido.
       </p>
       <div className="space-y-2">
         {PHASE_ORDER.map(phase => {
           const unlocked = config.phaseUnlocks[phase];
           const phaseMatches = matches.filter(m => m.phase === phase);
+
+          if (phase === 'group') {
+            return (
+              <div key={phase} className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="text-sm font-medium text-white">{PHASE_LABELS[phase]}</div>
+                  <button
+                    onClick={() => toggle(phase)}
+                    disabled={saving === phase}
+                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                      unlocked
+                        ? 'bg-green-900/40 text-green-400 hover:bg-green-900/60'
+                        : 'bg-red-900/40 text-red-400 hover:bg-red-900/60'
+                    }`}
+                  >
+                    {saving === phase ? '...' : unlocked ? '🔓 Abierta' : '🔒 Cerrada'}
+                  </button>
+                </div>
+                <div className="border-t border-gray-700 divide-y divide-gray-700/50">
+                  {[1, 2, 3].map(r => {
+                    const deadline = groupRoundDeadlines[r];
+                    const now = Date.now();
+                    const past = deadline ? now >= deadline.getTime() : false;
+                    return (
+                      <div key={r} className="flex items-center justify-between px-4 py-2 bg-gray-800/50">
+                        <div>
+                          <span className="text-xs text-gray-300">Jornada {r}</span>
+                          {deadline && (
+                            <span className="text-xs text-gray-500 ml-2">
+                              Cierre: {formatDeadline(deadline.toISOString())}
+                            </span>
+                          )}
+                        </div>
+                        <span className={`text-xs font-medium ${past ? 'text-red-400' : 'text-green-400'}`}>
+                          {past ? '🔒 Cerrada' : '🔓 Abierta'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          }
+
           const firstKickoff = phaseMatches.length
             ? phaseMatches.reduce((min, m) => (new Date(m.kickoff) < new Date(min.kickoff) ? m : min)).kickoff
             : null;
@@ -465,7 +531,7 @@ function PhasesTab({ matches }: { matches: Match[] }) {
                   <div className="text-xs text-gray-500 mt-0.5">Primer partido: {formatDeadline(firstKickoff)}</div>
                 )}
                 {deadline && (
-                  <div className="text-xs text-gray-500 mt-0.5">Cierre de pronósticos (−1h): {formatDeadline(deadline.toISOString())}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">Cierre (−1h): {formatDeadline(deadline.toISOString())}</div>
                 )}
               </div>
               <button
