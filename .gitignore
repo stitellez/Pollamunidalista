@@ -7,3 +7,6 @@ dist/
 .DS_Store
 .vercel
 .env*.local
+
+# KV-Backups (datos personales — no subir)
+backend/backups/

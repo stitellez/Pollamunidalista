@@ -13,12 +13,15 @@ router.get('/me', requireAuth, async (req, res) => {
 
 // POST /api/predictions — Prediction abgeben oder überschreiben
 router.post('/', requireAuth, async (req, res) => {
-  const { matchId, homeScore, awayScore } = req.body;
+  const { matchId, homeScore, awayScore, advance } = req.body;
   if (!matchId || homeScore === undefined || awayScore === undefined) {
     return res.status(400).json({ error: 'matchId, homeScore, awayScore erforderlich' });
   }
   if (!Number.isInteger(homeScore) || !Number.isInteger(awayScore) || homeScore < 0 || awayScore < 0) {
     return res.status(400).json({ error: 'Scores müssen positive ganze Zahlen sein' });
+  }
+  if (advance !== undefined && advance !== null && advance !== 'home' && advance !== 'away') {
+    return res.status(400).json({ error: "advance muss 'home', 'away' oder null sein" });
   }
 
   const matches = await readJSON('matches.json');
@@ -53,6 +56,8 @@ router.post('/', requireAuth, async (req, res) => {
     p => p.userId === req.user.id && p.matchId === matchId
   );
 
+  // Weiterkommer nur für K.-o.-Spiele speichern; bei nicht-unentschiedenem Tipp
+  // ist er implizit, wird aber zur Klarheit mitgespeichert wenn mitgeschickt.
   const entry = {
     userId: req.user.id,
     matchId,
@@ -60,6 +65,9 @@ router.post('/', requireAuth, async (req, res) => {
     awayScore,
     submittedAt: new Date().toISOString(),
   };
+  if (match.phase !== 'group' && (advance === 'home' || advance === 'away')) {
+    entry.advance = advance;
+  }
 
   if (existingIdx >= 0) {
     predictions[existingIdx] = entry;

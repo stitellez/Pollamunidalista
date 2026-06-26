@@ -116,25 +116,25 @@ function ResultsTab({ matches, onUpdate }: { matches: Match[]; onUpdate: () => v
 }
 
 function KnockoutMatchRow({ match, onUpdate }: { match: Match; onUpdate: () => void }) {
-  const [home, setHome] = useState(match.homeTeam === 'TBD' ? '' : match.homeTeam);
-  const [away, setAway] = useState(match.awayTeam === 'TBD' ? '' : match.awayTeam);
   const [hs, setHs] = useState(match.homeScore !== null ? String(match.homeScore) : '');
   const [as_, setAs] = useState(match.awayScore !== null ? String(match.awayScore) : '');
+  const [shootout, setShootout] = useState<'home' | 'away' | ''>(match.shootoutWinner ?? '');
   const [saving, setSaving] = useState<string | null>(null);
 
-  async function saveTeams() {
-    setSaving('teams');
-    try {
-      await api.put(`/admin/matches/${match.id}/teams`, { homeTeam: home || 'TBD', awayTeam: away || 'TBD' });
-      onUpdate();
-    } finally { setSaving(null); }
-  }
+  // Teams kommen automatisch aus dem Bracket — read-only und immer aktuell (props).
+  const known = match.homeTeam !== 'TBD' && match.awayTeam !== 'TBD';
+  const isTie = hs !== '' && as_ !== '' && Number(hs) === Number(as_);
+  const locked = match.resultLocked;
 
   async function saveResult() {
     if (hs === '' || as_ === '') return;
     setSaving('result');
     try {
-      await api.put(`/admin/matches/${match.id}/result`, { homeScore: Number(hs), awayScore: Number(as_) });
+      await api.put(`/admin/matches/${match.id}/result`, {
+        homeScore: Number(hs),
+        awayScore: Number(as_),
+        shootoutWinner: isTie ? (shootout || null) : null,
+      });
       onUpdate();
     } finally { setSaving(null); }
   }
@@ -147,45 +147,47 @@ function KnockoutMatchRow({ match, onUpdate }: { match: Match; onUpdate: () => v
     } finally { setSaving(null); }
   }
 
-  const locked = match.resultLocked;
+  const teamCell = (team: string, align: string) =>
+    known ? <span className={`flex-1 ${align} text-sm text-white`}>{teamLabel(team)}</span>
+          : <span className={`flex-1 ${align} text-sm text-gray-600 italic`}>Por definir</span>;
 
   return (
     <div className="bg-gray-800 rounded-lg p-3">
       <div className="text-xs text-gray-500 mb-2">{match.label}</div>
-      <div className="flex gap-2 items-center mb-2">
-        <input value={home} onChange={e => setHome(e.target.value)} placeholder="Equipo local" disabled={locked}
-          className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-yellow-500 disabled:opacity-50" />
-        <span className="text-gray-500">vs</span>
-        <input value={away} onChange={e => setAway(e.target.value)} placeholder="Equipo visitante" disabled={locked}
-          className="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-yellow-500 disabled:opacity-50" />
-        <button onClick={saveTeams} disabled={saving === 'teams' || locked}
-          className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded disabled:opacity-50">
-          {saving === 'teams' ? '...' : 'Teams'}
+      <div className="flex gap-2 items-center">
+        {teamCell(match.homeTeam, 'text-right')}
+        <input type="number" value={hs} onChange={e => setHs(e.target.value)} min="0" max="20" disabled={locked || !known}
+          className="w-12 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-yellow-500 disabled:opacity-50" />
+        <span className="text-gray-500">:</span>
+        <input type="number" value={as_} onChange={e => setAs(e.target.value)} min="0" max="20" disabled={locked || !known}
+          className="w-12 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-yellow-500 disabled:opacity-50" />
+        {teamCell(match.awayTeam, 'text-left')}
+        <button onClick={saveResult} disabled={saving === 'result' || locked || !known}
+          className="px-3 py-1 bg-yellow-500 hover:bg-yellow-400 text-gray-900 text-xs font-bold rounded disabled:opacity-50">
+          {saving === 'result' ? '...' : 'Resultado'}
         </button>
-      </div>
-      {match.homeTeam !== 'TBD' && (
-        <div className="flex gap-2 items-center">
-          <input type="number" value={hs} onChange={e => setHs(e.target.value)} min="0" max="20" disabled={locked}
-            className="w-12 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-yellow-500 disabled:opacity-50" />
-          <span className="text-gray-500">:</span>
-          <input type="number" value={as_} onChange={e => setAs(e.target.value)} min="0" max="20" disabled={locked}
-            className="w-12 bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white text-center focus:outline-none focus:border-yellow-500 disabled:opacity-50" />
-          <button onClick={saveResult} disabled={saving === 'result' || locked}
-            className="px-3 py-1 bg-yellow-500 hover:bg-yellow-400 text-gray-900 text-xs font-bold rounded disabled:opacity-50">
-            {saving === 'result' ? '...' : 'Resultado'}
+        {match.homeScore !== null && (
+          <button
+            onClick={toggleLock}
+            disabled={saving === 'lock'}
+            title={locked ? 'Resultado bloqueado — clic para desbloquear' : 'Bloquear resultado definitivo'}
+            className={`text-xs px-2 py-1 rounded transition-colors ${
+              locked ? 'bg-red-900/40 text-red-400 hover:bg-red-900/60' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+            }`}
+          >
+            {locked ? '🔒' : '🔓'}
           </button>
-          {match.homeScore !== null && (
-            <button
-              onClick={toggleLock}
-              disabled={saving === 'lock'}
-              title={locked ? 'Resultado bloqueado — clic para desbloquear' : 'Bloquear resultado definitivo'}
-              className={`text-xs px-2 py-1 rounded transition-colors ${
-                locked ? 'bg-red-900/40 text-red-400 hover:bg-red-900/60' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-              }`}
-            >
-              {locked ? '🔒' : '🔓'}
-            </button>
-          )}
+        )}
+      </div>
+      {isTie && known && (
+        <div className="mt-2 flex items-center gap-2 text-xs">
+          <span className="text-gray-400">🥅 Empate — ¿quién pasa (penales)?</span>
+          <select value={shootout} onChange={e => setShootout(e.target.value as 'home' | 'away' | '')} disabled={locked}
+            className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-white focus:outline-none focus:border-yellow-500 disabled:opacity-50">
+            <option value="">— elegir —</option>
+            <option value="home">{teamLabel(match.homeTeam)}</option>
+            <option value="away">{teamLabel(match.awayTeam)}</option>
+          </select>
         </div>
       )}
     </div>
@@ -204,7 +206,11 @@ function KnockoutTab({ matches, onUpdate }: { matches: Match[]; onUpdate: () => 
 
   return (
     <div>
-      <p className="text-gray-400 text-sm mb-4">Introduce los equipos de las rondas eliminatorias en cuanto se conozcan.</p>
+      <p className="text-gray-400 text-sm mb-4">
+        Los equipos se rellenan <span className="text-yellow-400">automáticamente</span> a partir de los resultados oficiales
+        (ganadores y segundos de grupo, los 8 mejores terceros según la tabla oficial de la FIFA, y los ganadores de cada cruce).
+        Tú solo introduces el marcador. Si un cruce acaba en empate, elige quién pasa en penales.
+      </p>
       {phaseOrder.map(phase => {
         const phaseMatches = knockoutMatches.filter(m => m.phase === phase);
         if (phaseMatches.length === 0) return null;
@@ -285,6 +291,16 @@ function ScoringTab() {
           <input type="number" min="0" value={s.correctOutcomeScore}
             onChange={e => setConfig({ ...config, scoring: { ...s, correctOutcomeScore: Number(e.target.value) } })}
             className="w-24 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
+        </div>
+
+        <div>
+          <label className="block text-sm text-gray-300 mb-1">🏆 Bono "quién pasa" (solo eliminatorias)</label>
+          <input type="number" min="0" value={s.advanceBonus ?? 0}
+            onChange={e => setConfig({ ...config, scoring: { ...s, advanceBonus: Number(e.target.value) } })}
+            className="w-24 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-yellow-500" />
+          <p className="text-xs text-gray-500 mt-1">
+            Puntos extra si aciertas qué equipo avanza en un partido de eliminatorias (también si pasa en penales). Se multiplica por el factor de fase.
+          </p>
         </div>
 
         <p className="text-xs text-gray-500">

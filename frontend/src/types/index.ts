@@ -21,6 +21,7 @@ export interface Match {
   locked: boolean;
   phaseUnlocked: boolean;
   resultLocked: boolean;
+  shootoutWinner?: 'home' | 'away' | null;
 }
 
 export interface Prediction {
@@ -28,6 +29,7 @@ export interface Prediction {
   matchId: string;
   homeScore: number;
   awayScore: number;
+  advance?: 'home' | 'away';
   submittedAt: string;
 }
 
@@ -77,6 +79,7 @@ export interface ScoringConfig {
   exactScore: number;
   goalDifferenceScore: number;
   correctOutcomeScore: number;
+  advanceBonus: number;
   phaseMultipliers: Record<Phase, number>;
   bonusRules: { name: string; type: string; points: number }[];
 }

@@ -8,6 +8,31 @@ function bothScored(home, away) {
   return home > 0 && away > 0;
 }
 
+// K.-o.-Phasen — hier gibt es immer einen Sieger, der weiterkommt.
+const KNOCKOUT_PHASES = new Set([
+  'round_of_32', 'round_of_16', 'quarterfinal', 'semifinal', 'third_place', 'final',
+]);
+
+// Welche Seite kommt laut tatsächlichem Ergebnis weiter? 'home' | 'away' | null.
+// Bei Unentschieden nach Spielzeit entscheidet das Elfmeterschießen (shootoutWinner).
+function actualAdvance(match) {
+  if (match.homeScore === null || match.awayScore === null) return null;
+  if (match.homeScore > match.awayScore) return 'home';
+  if (match.awayScore > match.homeScore) return 'away';
+  if (match.shootoutWinner === 'home' || match.shootoutWinner === 'away') return match.shootoutWinner;
+  return null;
+}
+
+// Welche Seite hat der Tipper als Weiterkommer angegeben? 'home' | 'away' | null.
+// Explizite Wahl (prediction.advance) gewinnt; sonst aus einem nicht-unentschiedenen
+// Tipp abgeleitet. Tipp auf Unentschieden ohne explizite Wahl -> null (kein Bonus).
+function predictedAdvance(prediction) {
+  if (prediction.advance === 'home' || prediction.advance === 'away') return prediction.advance;
+  if (prediction.homeScore > prediction.awayScore) return 'home';
+  if (prediction.awayScore > prediction.homeScore) return 'away';
+  return null;
+}
+
 // Each evaluator receives (prediction, match) and returns true if the bonus condition is met.
 const BONUS_CONDITIONS = {
   correct_home_goals: (p, m) => p.homeScore === m.homeScore,
@@ -29,7 +54,7 @@ function scorePrediction(prediction, match, config) {
   if (match.homeScore === null || match.awayScore === null) return 0;
   if (prediction.homeScore === null || prediction.awayScore === null) return 0;
 
-  const { exactScore, goalDifferenceScore, correctOutcomeScore, phaseMultipliers = {}, bonusRules = [] } = config.scoring;
+  const { exactScore, goalDifferenceScore, correctOutcomeScore, phaseMultipliers = {}, bonusRules = [], advanceBonus = 0 } = config.scoring;
 
   const isExact =
     prediction.homeScore === match.homeScore &&
@@ -52,6 +77,17 @@ function scorePrediction(prediction, match, config) {
     const condition = BONUS_CONDITIONS[rule.type];
     if (condition && condition(prediction, match)) {
       bonusPoints += rule.points;
+    }
+  }
+
+  // K.-o.-Bonus „Weiterkommer": in Eliminationsspielen Punkte fürs richtige Tippen,
+  // welches Team weiterkommt — löst den Elfmeter-Fall sauber (bei getipptem
+  // Unentschieden ist die explizite Weiterkommer-Wahl das einzige Unterscheidungsmerkmal).
+  if (advanceBonus > 0 && KNOCKOUT_PHASES.has(match.phase)) {
+    const actual = actualAdvance(match);
+    const predicted = predictedAdvance(prediction);
+    if (actual && predicted && actual === predicted) {
+      bonusPoints += advanceBonus;
     }
   }
 

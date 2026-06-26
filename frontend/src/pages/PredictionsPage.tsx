@@ -25,18 +25,27 @@ function formatKickoff(iso: string) {
 function MatchCard({ match, myPred, onSave }: {
   match: Match;
   myPred: Prediction | null;
-  onSave: (matchId: string, home: number, away: number) => Promise<void>;
+  onSave: (matchId: string, home: number, away: number, advance?: 'home' | 'away' | null) => Promise<void>;
 }) {
   const [home, setHome] = useState<string>(myPred ? String(myPred.homeScore) : '');
   const [away, setAway] = useState<string>(myPred ? String(myPred.awayScore) : '');
+  const [advance, setAdvance] = useState<'home' | 'away' | ''>(myPred?.advance ?? '');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  const isKnockout = match.phase !== 'group';
+  // Bei getipptem Unentschieden in K.-o.-Spielen MUSS der Weiterkommer gewählt werden.
+  const isTiePredicted = home !== '' && away !== '' && Number(home) === Number(away);
+  const needsAdvance = isKnockout && isTiePredicted && advance === '';
+
   async function handleSave() {
     if (home === '' || away === '') return;
+    if (needsAdvance) return;
     setSaving(true);
     try {
-      await onSave(match.id, Number(home), Number(away));
+      // Weiterkommer nur in K.-o.-Spielen mitschicken; bei klarem Tipp ist er implizit.
+      const adv = isKnockout ? (advance || null) : null;
+      await onSave(match.id, Number(home), Number(away), adv);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } finally {
@@ -93,11 +102,32 @@ function MatchCard({ match, myPred, onSave }: {
         <span className="flex-1 font-semibold text-white">{teamLabel(match.awayTeam)}</span>
       </div>
 
+      {isKnockout && !match.locked && !isTBD && (
+        <div className="mt-3">
+          <div className="text-center text-xs text-gray-400 mb-1.5">
+            ¿Quién pasa?{' '}
+            {isTiePredicted
+              ? <span className="text-yellow-500">obligatorio si empatas (penales)</span>
+              : <span className="text-gray-600">opcional — implícito por el marcador</span>}
+          </div>
+          <div className="flex gap-2 justify-center">
+            <button type="button" onClick={() => setAdvance(advance === 'home' ? '' : 'home')}
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${advance === 'home' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
+              {teamLabel(match.homeTeam)}
+            </button>
+            <button type="button" onClick={() => setAdvance(advance === 'away' ? '' : 'away')}
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${advance === 'away' ? 'bg-yellow-500 text-gray-900' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
+              {teamLabel(match.awayTeam)}
+            </button>
+          </div>
+        </div>
+      )}
+
       {!match.locked && !isTBD && (
-        <div className="mt-3 flex justify-center">
+        <div className="mt-3 flex flex-col items-center gap-1">
           <button
             onClick={handleSave}
-            disabled={home === '' || away === '' || saving}
+            disabled={home === '' || away === '' || needsAdvance || saving}
             className={`px-4 py-1 rounded-lg text-sm font-medium transition-colors ${
               saved
                 ? 'bg-green-600 text-white'
@@ -106,12 +136,14 @@ function MatchCard({ match, myPred, onSave }: {
           >
             {saved ? '✓ Guardado' : saving ? 'Guardando...' : myPred ? 'Editar' : 'Pronosticar'}
           </button>
+          {needsAdvance && <span className="text-xs text-yellow-500">Elige quién pasa para guardar</span>}
         </div>
       )}
 
       {hasResult && myPred && (
         <div className="mt-2 text-center text-xs text-gray-500">
           Tu pronóstico: {myPred.homeScore} : {myPred.awayScore}
+          {myPred.advance && <> · pasa <span className="text-gray-400">{teamLabel(myPred.advance === 'home' ? match.homeTeam : match.awayTeam)}</span></>}
         </div>
       )}
     </div>
@@ -276,11 +308,13 @@ export default function PredictionsPage() {
     }).finally(() => setLoading(false));
   }, []);
 
-  async function savePrediction(matchId: string, home: number, away: number) {
-    await api.post('/predictions', { matchId, homeScore: home, awayScore: away });
+  async function savePrediction(matchId: string, home: number, away: number, advance?: 'home' | 'away' | null) {
+    await api.post('/predictions', { matchId, homeScore: home, awayScore: away, advance: advance ?? null });
     setMyPreds(prev => {
       const filtered = prev.filter(p => p.matchId !== matchId);
-      return [...filtered, { userId: '', matchId, homeScore: home, awayScore: away, submittedAt: new Date().toISOString() }];
+      const entry: Prediction = { userId: '', matchId, homeScore: home, awayScore: away, submittedAt: new Date().toISOString() };
+      if (advance === 'home' || advance === 'away') entry.advance = advance;
+      return [...filtered, entry];
     });
   }
 

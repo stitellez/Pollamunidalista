@@ -3,6 +3,7 @@
     "exactScore": 5,
     "goalDifferenceScore": 3,
     "correctOutcomeScore": 1,
+    "advanceBonus": 2,
     "phaseMultipliers": {
       "group": 1,
       "round_of_32": 2,
@@ -33,5 +34,5 @@
       "topScorer": null
     }
   },
-  "scoringNote": "Punkte sind additiv: Treffer-Ergebnis (5) + Tor-Differenz (3) + richtiger Sieger/Unentschieden (1) — alle erfüllten Bedingungen zaehlen zusammen, danach mit phaseMultipliers fuer die jeweilige Phase multipliziert. phaseUnlocks: nur freigeschaltete Phasen sind tippbar (zusaetzlich zur zeitlichen Sperre durch Anpfiff)."
+  "scoringNote": "Punkte sind additiv: Treffer-Ergebnis (5) + Tor-Differenz (3) + richtiger Sieger/Unentschieden (1) — alle erfüllten Bedingungen zaehlen zusammen, danach mit phaseMultipliers fuer die jeweilige Phase multipliziert. advanceBonus (2): NUR in K.-o.-Spielen — Extrapunkte fuers richtige Tippen, welches Team weiterkommt (auch bei Entscheidung im Elfmeterschiessen); bei getipptem Unentschieden muss der Tipper den Weiterkommer explizit waehlen, sonst ist er aus dem Marker-Tipp implizit. phaseUnlocks: nur freigeschaltete Phasen sind tippbar (zusaetzlich zur zeitlichen Sperre durch Anpfiff)."
 }

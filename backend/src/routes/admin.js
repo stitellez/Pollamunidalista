@@ -2,6 +2,7 @@ const express = require('express');
 const { readJSON, writeJSON } = require('../utils/fileStore');
 const { requireAdmin } = require('../middleware/auth');
 const { scorePrediction } = require('../utils/scoring');
+const { propagate } = require('../utils/bracket');
 
 const router = express.Router();
 
@@ -9,13 +10,17 @@ const router = express.Router();
 router.use(requireAdmin);
 
 // PUT /api/admin/matches/:id/result — Ergebnis eintragen
+// Nach jedem Ergebnis wird das gesamte K.-o.-Bracket automatisch neu aufgelöst
+// (Gruppensieger/-zweite, beste Dritte via Annex-C-Tabelle, Sieger der K.-o.-Spiele).
+// shootoutWinner ('home'|'away') wird bei Unentschieden in K.-o.-Spielen verwendet,
+// um den Sieger fürs Weiterkommen zu bestimmen (Elfmeterschießen).
 router.put('/matches/:id/result', async (req, res) => {
-  const { homeScore, awayScore } = req.body;
+  const { homeScore, awayScore, shootoutWinner } = req.body;
   if (homeScore === undefined || awayScore === undefined) {
     return res.status(400).json({ error: 'homeScore und awayScore erforderlich' });
   }
 
-  const matches = await readJSON('matches.json');
+  let matches = await readJSON('matches.json');
   const idx = matches.findIndex(m => m.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Spiel nicht gefunden' });
 
@@ -23,10 +28,19 @@ router.put('/matches/:id/result', async (req, res) => {
     return res.status(403).json({ error: 'Ergebnis ist gesperrt — erst entsperren, um es zu ändern' });
   }
 
-  matches[idx].homeScore = homeScore === '' ? null : Number(homeScore);
-  matches[idx].awayScore = awayScore === '' ? null : Number(awayScore);
+  const cleared = homeScore === '' || awayScore === '';
+  matches[idx].homeScore = cleared ? null : Number(homeScore);
+  matches[idx].awayScore = cleared ? null : Number(awayScore);
+  // Elfmeter-Sieger nur relevant für K.-o.-Spiele; bei Reset/klarem Sieger zurücksetzen
+  if ('shootoutWinner' in matches[idx]) {
+    matches[idx].shootoutWinner =
+      cleared || matches[idx].homeScore !== matches[idx].awayScore ? null : (shootoutWinner ?? null);
+  }
+
+  // Bracket automatisch fortschreiben und die komplette (aufgelöste) Liste speichern
+  matches = propagate(matches);
   await writeJSON('matches.json', matches);
-  res.json(matches[idx]);
+  res.json(matches.find(m => m.id === req.params.id));
 });
 
 // PUT /api/admin/matches/:id/lock-result — Ergebnis sperren/entsperren (verhindert versehentliche Änderungen)

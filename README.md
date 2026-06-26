@@ -61,7 +61,35 @@ Danach läuft Frontend + Backend unter derselben Vercel-Domain (`/api/*` wird pe
 
 Anpassbar im Admin-Panel → "Punkte-Regeln".
 
+### Eliminatorias: Bono "quién pasa" (penales)
+
+En las eliminatorias **siempre avanza un equipo** (si empatan, penales). Además de los puntos del marcador, hay un **bono configurable "quién pasa"** (`advanceBonus`, por defecto 2 pts, se multiplica por el factor de fase):
+
+- Al pronosticar un partido de eliminatorias, el jugador también elige **qué equipo avanza**. Si predice un marcador no-empate, el equipo que pasa es implícito; si predice empate, **debe** elegir quién pasa en penales.
+- Cuando el admin introduce el resultado, en caso de empate elige el ganador de penales (`shootoutWinner`) — y los jugadores que acertaron el equipo que avanza reciben el bono. Configurable en Admin → "Reglas de puntos".
+
 ## WM 2026 Daten
 
 Gruppen und Anstoßzeiten sind auf Basis des Spielplans Stand Dezember 2024 vorgeladen.
-Im Admin-Panel können Ergebnisse und Knockout-Teams jederzeit angepasst werden.
+Im Admin-Panel können Ergebnisse jederzeit angepasst werden.
+
+## 🏆 Automatisches K.-o.-Bracket (FIFA-konform)
+
+Das gesamte K.-o.-Tableau (Spiele **M73–M104**: Ronda de 32 → Octavos → Cuartos → Semifinales → Tercer puesto → Final) füllt sich **automatisch**, sobald du die offiziellen Ergebnisse einträgst. Du musst keine Teams mehr von Hand zuweisen.
+
+Wie es funktioniert:
+- **Gruppensieger & -zweite** werden aus den Gruppentabellen bestimmt (FIFA-Tiebreaker nach Art. 13: Punkte → Direktvergleich → Gesamt-Tordifferenz → Gesamt-Tore).
+- **Die 8 besten Gruppendritten** werden gerankt und über die **offizielle FIFA-Tabelle aus Annex C** (alle 495 Kombinationen, `data/thirdsAllocation.json`) den richtigen Achtelfinal-Plätzen zugeordnet.
+- **Sieger der K.-o.-Spiele** rücken automatisch in die nächste Runde. Endet ein Spiel unentschieden, wählst du im Knockout-Tab den **Sieger im Elfmeterschießen**.
+
+Quelle der Bracket-Struktur: *Regulations for the FIFA World Cup 26™*, Art. 12.6–12.11 + Annex C.
+Logik: `backend/src/utils/bracket.js` (+ `standings.js`). Test über einen kompletten simulierten Turnierverlauf: `node backend/scripts/test-bracket.js`.
+
+> ⚠️ **NICHT `npm run seed` ausführen, wenn das Turnier schon läuft!** `seed` überschreibt users / predictions / config / matches in KV → **alle Teilnehmer, Tipps und Ergebnisse wären weg.**
+>
+> Für ein laufendes Turnier gibt es eine **sichere Migration ohne Datenverlust** — sie behält Gruppenspiele samt Ergebnissen, Nutzer, Tipps und Spezialtipps und ersetzt nur das K.-o.-Tableau durch die korrekte FIFA-Struktur (+ ergänzt `advanceBonus`):
+> ```bash
+> node backend/scripts/migrate-bracket.js            # Vorschau (schreibt NICHTS)
+> node backend/scripts/migrate-bracket.js --commit   # ausführen
+> ```
+> Die Vorschau prüft auch, ob Tipps verloren gingen, und bricht im Zweifel ab. `npm run seed` ist nur für eine **leere** Erstbefüllung gedacht.
