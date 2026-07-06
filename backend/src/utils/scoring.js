@@ -92,7 +92,14 @@ function scorePrediction(prediction, match, config) {
   }
 
   const multiplier = phaseMultipliers[match.phase] ?? 1;
-  return (basePoints + bonusPoints) * multiplier;
+  let total = (basePoints + bonusPoints) * multiplier;
+
+  // Regel „halbe Punktzahl": nachträglich/verspätet eingetragene Tipps (Flag
+  // prediction.halfPoints === true) zählen nur die Hälfte der Endpunktzahl.
+  // Wird vom Admin/Injektions-Skript gesetzt; normale Tipps haben das Flag nicht.
+  if (prediction.halfPoints === true) total = total / 2;
+
+  return total;
 }
 
 function normalizeName(value) {

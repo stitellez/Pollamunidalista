@@ -68,6 +68,14 @@ En las eliminatorias **siempre avanza un equipo** (si empatan, penales). Además
 - Al pronosticar un partido de eliminatorias, el jugador también elige **qué equipo avanza**. Si predice un marcador no-empate, el equipo que pasa es implícito; si predice empate, **debe** elegir quién pasa en penales.
 - Cuando el admin introduce el resultado, en caso de empate elige el ganador de penales (`shootoutWinner`) — y los jugadores que acertaron el equipo que avanza reciben el bono. Configurable en Admin → "Reglas de puntos".
 
+### Regel „halbe Punktzahl" (nachträgliche Tipps)
+
+Ein Tipp, der **nachträglich/verspätet** eingetragen wird (z.B. per Admin-Skript nach Ablauf der Frist), zählt nur die **halbe Endpunktzahl**. Umgesetzt über das Flag `halfPoints: true` am Prediction-Eintrag — normale, fristgerecht abgegebene Tipps haben das Flag nicht und zählen voll.
+
+- Berechnung: `(Basis + Bonus) × Phasenfaktor`, danach **÷ 2** wenn `halfPoints` gesetzt ist. Zentral in `backend/src/utils/scoring.js` — schlägt automatisch in Rangliste, Ergebnissen und Admin-Ansicht durch.
+- Setzen: beim Nach-Eintragen das Flag mitgeben (siehe `backend/scripts/set-lucho-m91.js` als Vorlage).
+- Hinweis: Bei ungeraden Summen sind halbe Werte möglich (z.B. 9 → 4,5).
+
 ## WM 2026 Daten
 
 Gruppen und Anstoßzeiten sind auf Basis des Spielplans Stand Dezember 2024 vorgeladen.
